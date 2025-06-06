@@ -1,0 +1,177 @@
+# Cursor AI Rules for Landify
+
+## Project Overview
+Landify is an AI-powered landing page generator that combines Google Maps business data with OpenAI's content generation capabilities to create tailored marketing websites.
+
+## Technical Stack
+- Framework: React
+- Language: TypeScript
+- Key Dependencies:
+  - shadcn/ui
+  - react-query
+  - OpenAI API
+  - Google Maps API
+
+## Code Generation Rules
+
+### 1. Project Structure
+```
+src/
+├── components/         # Reusable UI components
+│   ├── ui/            # shadcn components
+│   └── features/      # Feature-specific components
+├── hooks/             # Custom React hooks
+├── lib/               # Utility functions and configurations
+├── pages/             # Page components
+├── styles/            # Global styles and themes
+├── types/             # TypeScript type definitions
+└── api/               # API integration and services
+```
+
+### 2. Code Style
+- Use 2 spaces for indentation
+- Maximum line length: 100 characters
+- Use semicolons
+- Use single quotes for strings
+- Use PascalCase for components and interfaces
+- Use camelCase for variables and functions
+- Use UPPER_CASE for constants
+
+### 3. Component Guidelines
+- Components should be functional components using React hooks
+- Props must be properly typed using TypeScript interfaces
+- Use proper prop validation and default values
+- Implement error boundaries for critical components
+- Follow the single responsibility principle
+- Use composition over inheritance
+- Implement proper loading and error states
+
+### 4. Type System
+- Enable strict TypeScript mode
+- Define interfaces for all props and state
+- Use proper type guards for runtime checks
+- Avoid using 'any' type
+- Use proper generic types where applicable
+- Document complex type definitions
+- Use proper null/undefined handling
+
+### 5. API Integration
+- Use react-query for data fetching and caching
+- Implement proper error handling and retry logic
+- Use proper type definitions for API responses
+- Implement proper loading states
+- Use proper authentication headers
+- Implement proper request/response interceptors
+- Follow RESTful conventions
+
+### 6. State Management
+- Use React Query for server state
+- Use React Context for global UI state
+- Use local state for component-specific state
+- Implement proper state initialization
+- Use proper state update patterns
+- Document state structure
+- Implement proper state persistence
+
+### 7. Testing Requirements
+- Use Jest and React Testing Library
+- Write unit tests for all components
+- Write integration tests for critical flows
+- Mock external dependencies
+- Test error scenarios
+- Maintain minimum 80% test coverage
+- Use proper test descriptions
+
+### 8. Security Guidelines
+- Implement proper input validation
+- Sanitize all user inputs
+- Use proper authentication flows
+- Implement proper CORS policies
+- Use environment variables for sensitive data
+- Follow OWASP security guidelines
+- Implement proper rate limiting
+
+### 9. Performance Rules
+- Implement proper code splitting
+- Use React.lazy for component lazy loading
+- Optimize bundle size
+- Implement proper caching strategies
+- Use proper memoization
+- Optimize images and assets
+- Implement proper loading states
+
+### 10. Documentation
+- Use JSDoc for function documentation
+- Document complex business logic
+- Include usage examples
+- Document API endpoints
+- Document component props
+- Document state management
+- Keep README up to date
+
+## Best Practices
+
+### 1. Code Quality
+- Write self-documenting code
+- Keep functions small and focused
+- Follow DRY principles
+- Use meaningful variable names
+- Implement proper error handling
+- Write maintainable code
+- Use proper code organization
+
+### 2. Performance
+- Implement proper code splitting
+- Use proper lazy loading
+- Optimize bundle size
+- Implement proper caching
+- Optimize rendering performance
+- Use proper image optimization
+- Implement proper loading states
+
+### 3. Security
+- Validate all user inputs
+- Sanitize all data outputs
+- Use proper authentication
+- Protect sensitive data
+- Follow security best practices
+- Implement proper CORS
+- Use secure dependencies
+
+## Project-Specific Rules
+
+### 1. AI Integration
+- Implement proper error handling for AI responses
+- Use proper prompt engineering
+- Implement proper rate limiting
+- Cache AI responses when appropriate
+- Handle AI service failures gracefully
+- Implement proper fallback mechanisms
+- Document AI integration patterns
+
+### 2. Google Maps Integration
+- Implement proper error handling
+- Use proper loading states
+- Implement proper caching
+- Handle API limits properly
+- Implement proper fallback mechanisms
+- Document integration patterns
+- Use proper type definitions
+
+### 3. UI/UX Guidelines
+- Follow shadcn/ui design patterns
+- Implement proper responsive design
+- Use proper accessibility patterns
+- Implement proper loading states
+- Use proper error states
+- Follow design system guidelines
+- Implement proper animations
+
+## Version Control
+- Use meaningful commit messages
+- Follow conventional commits
+- Implement proper branching strategy
+- Use proper PR descriptions
+- Implement proper code review process
+- Use proper versioning
+- Document breaking changes 

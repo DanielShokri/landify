@@ -124,7 +124,7 @@ function LandingPageList() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {landingPages.map((page) => (
-              <Card key={page.id} className="backdrop-blur-sm bg-white/5 border border-white/10 text-white hover:bg-white/10 transition-all duration-300">
+              <Card key={page.id} className="backdrop-blur-sm bg-white/5 border border-white/10 text-white">
                 <CardHeader>
                   <CardTitle className="text-lg">{page.businessData.name}</CardTitle>
                   <p className="text-sm text-gray-400">{page.businessData.type}</p>

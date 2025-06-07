@@ -249,54 +249,128 @@ class OpenAIService {
     targetAudience?: string,
     industry?: string
   ): string {
-    return `
-Create compelling landing page content for the following business:
+    // Build comprehensive business hours text
+    const hoursText = businessData.hours ? Object.entries(businessData.hours)
+      .filter(([_, hours]) => hours)
+      .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours}`)
+      .join(', ') : 'Hours available upon request';
 
-Business Details:
+    // Build amenities list
+    const amenitiesText = businessData.amenities && businessData.amenities.length > 0 
+      ? businessData.amenities.join(', ') 
+      : 'Standard amenities available';
+
+    // Build social media text
+    const socialMediaText = businessData.socialMedia ? 
+      Object.entries(businessData.socialMedia)
+        .filter(([_, link]) => link)
+        .map(([platform, _]) => platform)
+        .join(', ') : 'Contact us for more information';
+
+    return `
+Create compelling, detailed landing page content for the following business using ALL available information:
+
+COMPREHENSIVE BUSINESS PROFILE:
 - Name: ${businessData.name}
 - Type: ${businessData.type}
 - Description: ${businessData.description}
 - Address: ${businessData.address}
 - Phone: ${businessData.phone}
-- Rating: ${businessData.rating}/5 (${businessData.reviews} reviews)
+- Email: ${businessData.email || 'Not provided'}
+- Website: ${businessData.website || 'Not provided'}
+- Rating: ${businessData.rating || 'New business'}/5 (${businessData.reviews || 0} customer reviews)
+- Business Hours: ${hoursText}
+- Amenities/Features: ${amenitiesText}
+- Social Media Presence: ${socialMediaText}
+- Coordinates: ${businessData.coordinates ? `${businessData.coordinates.lat}, ${businessData.coordinates.lng}` : 'Location services available'}
+- Photo Gallery: ${businessData.photos?.length || 0} business photos available
 
-Content Requirements:
+CONTENT GENERATION REQUIREMENTS:
 - Tone: ${tone}
 - Style: ${style}
-- Target Audience: ${targetAudience || 'General consumers'}
+- Target Audience: ${targetAudience || 'Local community and potential customers'}
 - Industry: ${industry || businessData.type}
 
-Generate the following content in JSON format:
+Generate comprehensive, detailed content in JSON format that LEVERAGES ALL the business data above:
+
 {
-  "headline": "Main headline (max 60 characters)",
-  "subheadline": "Supporting subheadline (max 120 characters)",
-  "valuePropositions": ["3-5 key value propositions"],
+  "headline": "Compelling main headline (max 60 characters) that highlights unique value",
+  "subheadline": "Detailed supporting subheadline (max 150 characters) incorporating location and specialties",
+  "valuePropositions": [
+    "4-6 specific value propositions based on rating, reviews, hours, amenities, and business type",
+    "Include review-based proposition if rating is 4+ stars",
+    "Include convenience proposition if hours are extensive",
+    "Include location-based proposition using address details"
+  ],
   "services": [
     {
-      "name": "Service name",
-      "description": "Brief description",
-      "features": ["Key features"]
+      "name": "Primary service/offering name",
+      "description": "Detailed description incorporating business type and amenities",
+      "features": ["Specific features based on business data", "Hours-related benefit", "Location advantage"],
+      "price": "Call for pricing or mention value proposition"
+    },
+    {
+      "name": "Secondary service (if applicable)",
+      "description": "Another service offering based on business type",
+      "features": ["More specific features", "Quality indicators", "Customer benefits"]
     }
   ],
   "callToAction": {
     "primary": {
-      "text": "Primary CTA text",
+      "text": "Ultra-concise CTA (1-2 words max: Call, Book, Order, Visit, Get Quote)",
       "action": "contact"
+    },
+    "secondary": {
+      "text": "Short secondary CTA (1-2 words: Info, Hours, Reviews, More)",
+      "action": "info"
     }
   },
-  "aboutSection": "About us content (2-3 sentences)",
+  "aboutSection": "Rich about section (3-4 sentences) incorporating location, experience (inferred from reviews), specialties, and commitment to service quality",
   "contactInfo": {
     "phone": "${businessData.phone}",
-    "address": "${businessData.address}"
+    "address": "${businessData.address}",
+    "email": "${businessData.email || ''}",
+    "website": "${businessData.website || ''}",
+    "hours": {
+      ${businessData.hours ? Object.entries(businessData.hours)
+        .filter(([_, hours]) => hours)
+        .map(([day, hours]) => `"${day}": "${hours}"`)
+        .join(',\n      ') : '"general": "Contact for hours"'}
+    }
+  },
+  "trustSignals": {
+    "rating": ${businessData.rating || 0},
+    "reviewCount": ${businessData.reviews || 0},
+    "established": "Serving ${businessData.address.split(',')[0]} area",
+    "specialties": ["Based on business type and amenities"],
+    "guarantees": ["Quality service promise", "Customer satisfaction"]
+  },
+  "locationHighlights": {
+    "neighborhood": "Extract from ${businessData.address}",
+    "accessibility": "Based on location and amenities",
+    "parking": "Inferred from business type",
+    "nearbyLandmarks": "Local area context"
+  },
+  "businessHours": {
+    "schedule": "Extract from business hours data",
+    "specialHours": "Holiday or special event hours",
+    "availability": "Best times to visit or contact"
   }
 }
 
-Ensure the content is:
-1. Compelling and conversion-focused
-2. SEO-friendly with relevant keywords
-3. Appropriate for the specified tone and style
-4. Tailored to the target audience
-5. Highlighting the business's unique value proposition
+CRITICAL REQUIREMENTS:
+1. Use the ${businessData.rating || 0}/5 star rating prominently if ≥4.0 stars
+2. Highlight the ${businessData.reviews || 0} customer reviews as social proof
+3. Incorporate specific business hours for convenience messaging
+4. Reference location advantages from ${businessData.address}
+5. Use amenities/features data to create compelling value propositions
+6. Create trust signals from review count and rating
+7. Make content feel personal and locally-focused
+8. Ensure all content is accurate to the business type: ${businessData.type}
+9. Include specific calls-to-action based on business hours and contact methods
+10. Generate content that converts visitors into customers using social proof
+
+Focus on creating a comprehensive, trustworthy landing page that uses every piece of available business data to build credibility and drive conversions.
 `;
   }
 
@@ -310,74 +384,141 @@ Ensure the content is:
 
       const parsedContent = JSON.parse(jsonMatch[0]);
       
-      // Ensure all required fields are present with fallbacks
+      // Ensure all required fields are present with comprehensive fallbacks
       return {
         headline: parsedContent.headline || `Welcome to ${businessData.name}`,
         subheadline: parsedContent.subheadline || `Your trusted ${businessData.type.toLowerCase()} in ${businessData.address.split(',')[0]}`,
         valuePropositions: parsedContent.valuePropositions || [
           'Quality service you can trust',
           'Experienced professionals',
-          'Customer satisfaction guaranteed'
+          'Customer satisfaction guaranteed',
+          ...(businessData.rating && businessData.rating >= 4.0 ? [`${businessData.rating}/5 star rating from ${businessData.reviews} customers`] : []),
+          ...(businessData.amenities && businessData.amenities.length > 0 ? [businessData.amenities[0]] : [])
         ],
         services: parsedContent.services || [{
           name: 'Our Services',
           description: businessData.description || 'Professional services tailored to your needs',
-          features: ['High quality', 'Reliable', 'Affordable']
+          features: [
+            'High quality service',
+            'Professional expertise', 
+            'Customer-focused approach',
+            ...(businessData.amenities?.slice(0, 2) || [])
+          ]
         }],
         callToAction: parsedContent.callToAction || {
           primary: {
-            text: 'Contact Us Today',
+            text: businessData.phone ? 'Call' : 'Contact',
             action: 'contact'
+          },
+          secondary: {
+            text: businessData.rating ? 'Reviews' : 'Info',
+            action: 'info'
           }
         },
-        aboutSection: parsedContent.aboutSection || `${businessData.name} is a trusted ${businessData.type.toLowerCase()} serving the local community with excellence and dedication.`,
+        aboutSection: parsedContent.aboutSection || `${businessData.name} is a trusted ${businessData.type.toLowerCase()} serving the ${businessData.address.split(',')[0]} area${businessData.rating ? ` with a ${businessData.rating}/5 star rating` : ''}${businessData.reviews ? ` from ${businessData.reviews} satisfied customers` : ''}. We're committed to providing exceptional service and exceeding customer expectations.`,
         contactInfo: {
           phone: businessData.phone,
           address: businessData.address,
           email: businessData.email,
-          website: businessData.website
+          website: businessData.website,
+          hours: parsedContent.contactInfo?.hours || (businessData.hours ? businessData.hours as { [key: string]: string } : undefined)
+        },
+        // Parse new rich content fields
+        trustSignals: parsedContent.trustSignals || {
+          rating: businessData.rating || 0,
+          reviewCount: businessData.reviews || 0,
+          established: `Serving ${businessData.address.split(',')[0]} area`,
+          specialties: businessData.amenities?.slice(0, 3) || ['Quality Service', 'Professional Excellence'],
+          guarantees: ['Customer Satisfaction', 'Quality Guarantee']
+        },
+        locationHighlights: parsedContent.locationHighlights || {
+          neighborhood: businessData.address.split(',')[0] || 'Local area',
+          accessibility: 'Convenient location with easy access',
+          parking: businessData.type.toLowerCase().includes('restaurant') || businessData.type.toLowerCase().includes('retail') ? 'Parking available' : 'Contact for parking information',
+          nearbyLandmarks: `Located in ${businessData.address.split(',')[0]}`
+        },
+        businessHours: parsedContent.businessHours || {
+          schedule: businessData.hours ? Object.entries(businessData.hours)
+            .filter(([_, hours]) => hours)
+            .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours}`)
+            .join(' | ') : 'Contact us for hours',
+          specialHours: 'Holiday hours may vary',
+          availability: businessData.phone ? 'Call for immediate assistance' : 'Contact us for availability'
         }
       };
     } catch (error) {
       console.error('Error parsing generated content:', error);
       
-      // Return fallback content if parsing fails
-      return this.getFallbackContentWithoutTheme(businessData);
+      // Return enhanced fallback content if parsing fails
+      return this.getEnhancedFallbackContent(businessData);
     }
   }
 
-  private getFallbackContent(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
+  private getEnhancedFallbackContent(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
     return {
       headline: `Welcome to ${businessData.name}`,
-      subheadline: `Your trusted ${businessData.type.toLowerCase()} in ${businessData.address.split(',')[0]}`,
+      subheadline: `Your trusted ${businessData.type.toLowerCase()} in ${businessData.address.split(',')[0]}${businessData.rating ? ` • ${businessData.rating}/5 Stars` : ''}`,
       valuePropositions: [
         'Quality service you can trust',
         'Experienced professionals',
-        'Customer satisfaction guaranteed'
+        'Customer satisfaction guaranteed',
+        ...(businessData.rating && businessData.rating >= 4.0 ? [`${businessData.rating}/5 star rating from satisfied customers`] : []),
+        ...(businessData.amenities?.slice(0, 2) || [])
       ],
       services: [{
         name: 'Our Services',
         description: businessData.description || 'Professional services tailored to your needs',
-        features: ['High quality', 'Reliable', 'Affordable']
+        features: [
+          'High quality service',
+          'Professional expertise',
+          'Customer-focused approach',
+          ...(businessData.amenities?.slice(0, 2) || [])
+        ]
       }],
       callToAction: {
         primary: {
-          text: 'Contact Us Today',
+          text: businessData.phone ? 'Call' : 'Contact',
           action: 'contact'
+        },
+        secondary: {
+          text: businessData.rating ? 'Reviews' : 'Info',
+          action: 'info'
         }
       },
-      aboutSection: `${businessData.name} is a trusted ${businessData.type.toLowerCase()} serving the local community with excellence and dedication.`,
+      aboutSection: `${businessData.name} is a trusted ${businessData.type.toLowerCase()} serving the ${businessData.address.split(',')[0]} area${businessData.rating ? ` with a ${businessData.rating}/5 star rating` : ''}${businessData.reviews ? ` from ${businessData.reviews} satisfied customers` : ''}. We're committed to providing exceptional service and exceeding customer expectations.`,
       contactInfo: {
         phone: businessData.phone,
         address: businessData.address,
         email: businessData.email,
-        website: businessData.website
+        website: businessData.website,
+                 hours: businessData.hours as { [key: string]: string } | undefined
+      },
+      trustSignals: {
+        rating: businessData.rating || 0,
+        reviewCount: businessData.reviews || 0,
+        established: `Serving ${businessData.address.split(',')[0]} area`,
+        specialties: businessData.amenities?.slice(0, 3) || ['Quality Service', 'Professional Excellence'],
+        guarantees: ['Customer Satisfaction', 'Quality Guarantee']
+      },
+      locationHighlights: {
+        neighborhood: businessData.address.split(',')[0] || 'Local area',
+        accessibility: 'Convenient location with easy access',
+        parking: businessData.type.toLowerCase().includes('restaurant') || businessData.type.toLowerCase().includes('retail') ? 'Parking available' : 'Contact for parking information',
+        nearbyLandmarks: `Located in ${businessData.address.split(',')[0]}`
+      },
+      businessHours: {
+        schedule: businessData.hours ? Object.entries(businessData.hours)
+          .filter(([_, hours]) => hours)
+          .map(([day, hours]) => `${day.charAt(0).toUpperCase() + day.slice(1)}: ${hours}`)
+          .join(' | ') : 'Contact us for hours',
+        specialHours: 'Holiday hours may vary',
+        availability: businessData.phone ? 'Call for immediate assistance' : 'Contact us for availability'
       }
     };
   }
 
-  private getFallbackContentWithoutTheme(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
-    return this.getFallbackContent(businessData);
+  private getFallbackContent(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
+    return this.getEnhancedFallbackContent(businessData);
   }
 }
 

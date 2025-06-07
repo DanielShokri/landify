@@ -9,6 +9,9 @@ export interface GeneratedContent {
   testimonials?: Testimonial[];
   features?: Feature[];
   theme: LandingPageTheme;
+  trustSignals?: TrustSignals;
+  locationHighlights?: LocationHighlights;
+  businessHours?: BusinessHoursInfo;
 }
 
 export interface Service {
@@ -35,6 +38,9 @@ export interface ContactInfo {
   email?: string;
   address: string;
   website?: string;
+  hours?: {
+    [key: string]: string;
+  };
   socialMedia?: {
     facebook?: string;
     instagram?: string;
@@ -109,4 +115,25 @@ export interface LandingPageTheme {
   };
 }
 
-import { BusinessData } from './business'; 
+import { BusinessData } from './business';
+
+export interface TrustSignals {
+  rating: number;
+  reviewCount: number;
+  established: string;
+  specialties: string[];
+  guarantees: string[];
+}
+
+export interface LocationHighlights {
+  neighborhood: string;
+  accessibility: string;
+  parking: string;
+  nearbyLandmarks: string;
+}
+
+export interface BusinessHoursInfo {
+  schedule: string;
+  specialHours: string;
+  availability: string;
+} 

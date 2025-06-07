@@ -10,7 +10,8 @@ export interface BusinessData {
   rating?: number;
   reviews?: number;
   hours?: BusinessHours;
-  photos?: string[];
+  photos?: PlacePhoto[];
+  socialMedia?: SocialMediaLinks;
   amenities?: string[];
   coordinates?: {
     lat: number;
@@ -39,7 +40,6 @@ export interface BusinessSearchResult {
     lat: number;
     lng: number;
   };
-  photos?: string[];
 }
 
 export interface GoogleMapsPlace {
@@ -74,4 +74,29 @@ export interface GoogleMapsPlace {
   };
   // Added to replace deprecated utc_offset
   utc_offset_minutes?: number;
+}
+
+// Photo interfaces for Google Places API
+export interface PlacePhoto {
+  name: string;
+  widthPx: number;
+  heightPx: number;
+  authorAttributions?: {
+    displayName: string;
+    uri?: string;
+    photoUri?: string;
+  }[];
+  getURI?: (options?: { maxHeight?: number; maxWidth?: number }) => string;
+}
+
+export interface SocialMediaLinks {
+  website?: string;
+  facebook?: string;
+  instagram?: string;
+  twitter?: string;
+  linkedin?: string;
+  youtube?: string;
+  tiktok?: string;
+  yelp?: string;
+  tripadvisor?: string;
 }

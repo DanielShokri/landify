@@ -47,21 +47,23 @@ function LandingPage() {
             From your business info to a professional landing page in minutes - completely automated.
           </p>
 
-          <div className="flex flex-col md:flex-row gap-6 justify-center items-center mb-16">
+          <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center items-center mb-16">
             <Button 
               onClick={() => navigate('/onboarding')}
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-10 py-4 text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 w-full md:w-auto"
             >
-              Generate My Landing Page
+              <span className="hidden sm:inline">Generate My Landing Page</span>
+              <span className="sm:hidden">Create Page</span>
             </Button>
             <Button 
               onClick={() => navigate('/pages')}
               variant="outline" 
               size="lg"
-              className="border-white/20 text-black hover:bg-white/10 hover:text-white px-10 py-4 text-lg font-medium transition-all duration-300"
+              className="border-white/20 text-black hover:bg-white/10 hover:text-white px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-medium transition-all duration-300 w-full md:w-auto"
             >
-              View Examples
+              <span className="hidden sm:inline">View Examples</span>
+              <span className="sm:hidden">Examples</span>
             </Button>
           </div>
 
@@ -183,10 +185,11 @@ function LandingPage() {
           </p>
           <Button 
             size="lg" 
-            className="bg-white text-slate-900 hover:bg-gray-100 px-10 py-4 text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+            className="bg-white text-slate-900 hover:bg-gray-100 px-6 py-3 text-base md:px-10 md:py-4 md:text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl w-full max-w-xs md:w-auto"
             onClick={() => navigate('/onboarding')}
           >
-            Start Building Now
+            <span className="hidden sm:inline">Start Building Now</span>
+            <span className="sm:hidden">Start Now</span>
           </Button>
         </div>
 

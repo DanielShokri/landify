@@ -34,7 +34,7 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
   };
 
   const getCardClasses = (): string => {
-    let classes = 'rounded-xl border transition-all duration-300';
+    let classes = 'rounded-xl border';
     
     if (theme.effects.cardBlur) {
       classes += ' backdrop-blur-sm';
@@ -42,23 +42,19 @@ export function ThemeProvider({ theme, children }: ThemeProviderProps) {
     
     switch (theme.effects.shadows) {
       case 'soft':
-        classes += ' shadow-sm hover:shadow-md';
+        classes += ' shadow-sm';
         break;
       case 'medium':
-        classes += ' shadow-md hover:shadow-lg';
+        classes += ' shadow-md';
         break;
       case 'strong':
-        classes += ' shadow-lg hover:shadow-xl';
+        classes += ' shadow-lg';
         break;
       case 'none':
         classes += ' shadow-none';
         break;
       default:
-        classes += ' shadow-md hover:shadow-lg';
-    }
-
-    if (theme.effects.animations) {
-      classes += ' hover:scale-105';
+        classes += ' shadow-md';
     }
 
     return classes;

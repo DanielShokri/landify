@@ -79,7 +79,6 @@ export function FloatingActionButton({ pageId, businessName }: FloatingActionBut
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      console.log('✅ Landing page downloaded successfully');
     } catch (error) {
       console.error('❌ Failed to download landing page:', error);
       // Fallback: copy content to clipboard

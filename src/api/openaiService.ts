@@ -22,8 +22,6 @@ class OpenAIService {
   async generateLandingPageContent(request: ContentGenerationRequest): Promise<GeneratedContent> {
     const { businessData, tone = 'professional', style = 'modern', targetAudience, industry } = request;
 
-    console.log('🚀 Starting comprehensive AI content and design generation...');
-
     try {
       // Generate content and AI theme in parallel for better performance
       const [contentResult, aiThemeResult] = await Promise.allSettled([
@@ -37,18 +35,14 @@ class OpenAIService {
       // Handle content generation result
       if (contentResult.status === 'fulfilled') {
         content = contentResult.value;
-        console.log('✅ Content generation successful');
       } else {
-        console.warn('⚠️ Content generation failed, using fallback');
         content = this.getFallbackContent(businessData);
       }
 
       // Handle AI theme generation result
       if (aiThemeResult.status === 'fulfilled' && aiThemeResult.value) {
         theme = aiThemeResult.value;
-        console.log('✅ Unique AI theme generation successful');
       } else {
-        console.warn('⚠️ AI theme generation failed, generating emergency theme');
         // Use emergency theme generation as fallback
         theme = await this.generateEmergencyTheme(businessData, tone, style);
       }
@@ -111,8 +105,6 @@ class OpenAIService {
     targetAudience?: string
   ) {
     try {
-      console.log('🎨 Auto-generating unique AI theme for:', businessData.name);
-      
       // Use the new AI-driven theme service
       const theme = await themeService.generateTheme(businessData, {
         style: this.mapStyleToDesignStyle(style),
@@ -121,10 +113,8 @@ class OpenAIService {
         useAdvancedAI: true
       });
       
-      console.log('✅ Unique AI theme auto-generated successfully');
       return theme;
     } catch (error) {
-      console.warn('⚠️ Advanced AI theme auto-generation failed:', error);
       return null; // Will fallback to emergency theme
     }
   }
@@ -135,8 +125,6 @@ class OpenAIService {
     style: string
   ) {
     try {
-      console.log('🔧 Generating emergency unique theme...');
-      
       // Try simplified AI generation first
       const theme = await themeService.generateTheme(businessData, {
         style: this.mapStyleToDesignStyle(style),
@@ -144,10 +132,8 @@ class OpenAIService {
         useAdvancedAI: false // Use simplified AI
       });
       
-      console.log('✅ Emergency AI theme generated');
       return theme;
     } catch (error) {
-      console.error('❌ Emergency AI theme failed, using absolute fallback');
       
       // Create a minimal but unique theme manually
       return {

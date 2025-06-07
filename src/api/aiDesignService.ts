@@ -86,25 +86,20 @@ class AIDesignService {
       });
 
       this.isInitialized = true;
-      console.log('✅ OpenAI client initialized successfully');
     } catch (error) {
       console.error('❌ Failed to initialize OpenAI client:', error);
     }
   }
 
   async generateDesignSuggestions(request: DesignRequest): Promise<AIDesignSuggestion> {
-    console.log('🎨 Starting AI design generation for:', request.businessData.name);
-    
     if (!this.isInitialized || !this.client) {
       console.error('❌ OpenAI client not initialized');
       throw new Error('AI Design service not available. Please check your API configuration.');
     }
 
     const prompt = this.buildDesignPrompt(request);
-    console.log('📝 Generated prompt for AI design suggestions');
 
     try {
-      console.log('🚀 Making API call to OpenAI...');
       
       const completion = await this.client.chat.completions.create({
         model: 'gpt-4o-mini',
@@ -122,16 +117,12 @@ class AIDesignService {
         max_tokens: 3000
       });
 
-      console.log('✅ Received response from OpenAI');
-
       const content = completion.choices[0]?.message?.content;
       if (!content) {
         throw new Error('No design suggestions generated from OpenAI');
       }
 
-      console.log('🔄 Parsing AI design suggestions...');
       const suggestions = this.parseDesignSuggestions(content, request);
-      console.log('✅ Successfully generated AI design suggestions');
       
       return suggestions;
     } catch (error: any) {
@@ -145,7 +136,6 @@ class AIDesignService {
       } else if (error.message?.includes('network') || error.code === 'NETWORK_ERROR') {
         throw new Error('Network error. Please check your internet connection.');
       } else {
-        console.warn('⚠️ AI generation failed, falling back to industry-based suggestions');
         return this.getFallbackDesignSuggestions(request);
       }
     }
@@ -228,17 +218,13 @@ Consider:
 
   private parseDesignSuggestions(content: string, request: DesignRequest): AIDesignSuggestion {
     try {
-      console.log('🔍 Parsing AI response content:', content.substring(0, 200) + '...');
-      
       // Extract JSON from the response with better regex
       const jsonMatch = content.match(/\{[\s\S]*?\}(?=\s*$|\s*[^}]*$)/);
       if (!jsonMatch) {
-        console.warn('⚠️ No JSON object found in AI response');
         throw new Error('No JSON found in response');
       }
 
       let jsonString = jsonMatch[0];
-      console.log('📄 Extracted JSON string:', jsonString.substring(0, 200) + '...');
 
       // Clean up common JSON formatting issues from AI responses
       jsonString = this.cleanupAIJsonResponse(jsonString);
@@ -246,22 +232,16 @@ Consider:
       let suggestions;
       try {
         suggestions = JSON.parse(jsonString);
-        console.log('✅ Successfully parsed JSON from AI response');
       } catch (parseError) {
-        console.error('❌ JSON parsing failed, attempting to fix common issues:', parseError);
-        
         // Try to fix common AI JSON formatting issues
         const fixedJson = this.attemptJsonFix(jsonString);
         suggestions = JSON.parse(fixedJson);
-        console.log('✅ Successfully parsed JSON after fixing formatting issues');
       }
       
       // Validate and ensure all required fields with robust fallbacks
       return this.validateAndNormalizeSuggestions(suggestions, request);
       
     } catch (error) {
-      console.error('❌ Error parsing design suggestions:', error);
-      console.log('🔄 Falling back to industry-based design suggestions');
       return this.getFallbackDesignSuggestions(request);
     }
   }

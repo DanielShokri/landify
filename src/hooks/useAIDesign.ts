@@ -10,11 +10,9 @@ export function useAIDesign() {
 
   const generateSuggestionsMutation = useMutation({
     mutationFn: (request: DesignRequest) => {
-      console.log('🔥 useAIDesign: Starting mutation with request:', request);
       return aiDesignService.generateDesignSuggestions(request);
     },
     onSuccess: (data) => {
-      console.log('✅ useAIDesign: Successfully received suggestions:', data);
       setSuggestions(data);
     },
     onError: (error) => {

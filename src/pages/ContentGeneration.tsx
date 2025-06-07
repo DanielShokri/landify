@@ -46,10 +46,8 @@ function ContentGeneration() {
     
     setIsGenerating(true);
     try {
-      console.log('🚀 Generating content with automatic AI theme...');
       const content = await generateContent(request);
       setGeneratedContent(content);
-      console.log('✅ Content and AI theme generated successfully');
     } catch (error) {
       console.error('Failed to generate content:', error);
       // Could add error state here

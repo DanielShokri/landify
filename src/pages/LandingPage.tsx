@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { useNavigate } from 'react-router-dom';
+import { Zap, Palette, Clock, Search, Lightbulb, Puzzle, Sparkles } from 'lucide-react';
 
 function LandingPage() {
   const navigate = useNavigate();
@@ -15,16 +16,16 @@ function LandingPage() {
 
       {/* Navigation */}
       <nav className="relative z-10 flex justify-between items-center p-6 max-w-7xl mx-auto">
-        <div className="text-white font-bold text-xl">
+        <div className="text-white font-bold text-xl flex items-center gap-2">
+         <Sparkles className="w-8 h-8" />
           Landify
         </div>
         <div className="flex items-center space-x-8">
-          <a href="/pages" className="text-gray-300 hover:text-white transition-colors">My Pages</a>
-          <a href="#" className="text-gray-300 hover:text-white transition-colors">Blog</a>
+          <button onClick={() => navigate('/pages')} className="text-gray-300 hover:text-white transition-colors">My Pages</button>
           <Button 
             variant="outline" 
             className="border-gray-600 text-black-300 hover:bg-white hover:text-slate-900 transition-all duration-300"
-            onClick={() => window.location.href = '/onboarding'}
+            onClick={() => navigate('/onboarding')}
           >
             Get Started
           </Button>
@@ -35,13 +36,13 @@ function LandingPage() {
         {/* Hero Section */}
         <header className="text-center pt-20 pb-32">
           <h1 className="text-6xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            Create Stunning Landing Pages with
-            <br />
             <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-              AI-Powered Automation
+            AI-Driven Landing Pages
             </span>
+            <br />
+            Tailored for Your Business.
           </h1>
-          <p className="text-xl text-gray-300 max-w-3xl leading-relaxed mb-10">
+          <p className="text-xl text-center text-gray-300 max-w-3xl mx-auto leading-relaxed mb-10">
             Our AI automatically generates unique designs and content for every business. 
             From your business info to a professional landing page in minutes - completely automated.
           </p>
@@ -58,19 +59,17 @@ function LandingPage() {
               onClick={() => navigate('/pages')}
               variant="outline" 
               size="lg"
-              className="border-white/20 text-white hover:bg-white/10 hover:text-white px-10 py-4 text-lg font-medium transition-all duration-300"
+              className="border-white/20 text-black hover:bg-white/10 hover:text-white px-10 py-4 text-lg font-medium transition-all duration-300"
             >
               View Examples
             </Button>
           </div>
 
           {/* Feature highlights */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
-                </svg>
+                <Zap className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Fully Automated</h3>
               <p className="text-gray-300">AI handles everything - design, content, and optimization automatically</p>
@@ -78,9 +77,7 @@ function LandingPage() {
             
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17v4a2 2 0 002 2h4M13 13h4a2 2 0 012 2v4a2 2 0 01-2 2h-4m-6-4a2 2 0 01-2-2V9a2 2 0 012-2h2m0 0V6a2 2 0 012-2h2a2 2 0 012 2v1m-6 0a2 2 0 002 2h2a2 2 0 002-2m-6 0V4a2 2 0 012-2h2a2 2 0 012 2v2M7 7l3 3" />
-                </svg>
+                <Palette className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Unique Every Time</h3>
               <p className="text-gray-300">Every landing page gets a custom design tailored to the business</p>
@@ -88,9 +85,7 @@ function LandingPage() {
             
             <div className="text-center">
               <div className="w-16 h-16 bg-gradient-to-br from-indigo-400 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-4">
-                <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+                <Clock className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-xl font-semibold text-white mb-2">Ready in Minutes</h3>
               <p className="text-gray-300">From business info to professional landing page in under 5 minutes</p>
@@ -102,9 +97,7 @@ function LandingPage() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-32">
           <div className="group p-8 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105">
             <div className="w-12 h-12 bg-gradient-to-br from-blue-400 to-blue-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-              </svg>
+              <Search className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-3">Smart Business Search</h3>
             <p className="text-gray-300 leading-relaxed">
@@ -115,9 +108,7 @@ function LandingPage() {
 
           <div className="group p-8 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105">
             <div className="w-12 h-12 bg-gradient-to-br from-purple-400 to-purple-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
+              <Lightbulb className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-3">AI Content Generation</h3>
             <p className="text-gray-300 leading-relaxed">
@@ -128,9 +119,7 @@ function LandingPage() {
 
           <div className="group p-8 rounded-xl bg-white/5 backdrop-blur-sm border border-white/10 hover:bg-white/10 transition-all duration-300 hover:scale-105">
             <div className="w-12 h-12 bg-gradient-to-br from-indigo-400 to-indigo-600 rounded-lg flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300">
-              <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a1 1 0 01-1-1V9a1 1 0 011-1h1a2 2 0 100-4H4a1 1 0 01-1-1V4a1 1 0 011-1h3a1 1 0 001-1z" />
-              </svg>
+              <Puzzle className="w-6 h-6 text-white" />
             </div>
             <h3 className="text-xl font-semibold text-white mb-3">Visual Page Editor</h3>
             <p className="text-gray-300 leading-relaxed">
@@ -155,7 +144,7 @@ function LandingPage() {
                 </p>
               </div>
               {/* Connecting line */}
-              <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gradient-to-r from-blue-400/50 to-purple-400/50 z-0"></div>
+              <div className="hidden md:block absolute top-8 left-[63%] w-[88%] h-0.5 bg-gradient-to-r from-blue-400/50 to-purple-400/50 z-0"></div>
             </div>
             
             <div className="relative">
@@ -169,7 +158,7 @@ function LandingPage() {
                 </p>
               </div>
               {/* Connecting line */}
-              <div className="hidden md:block absolute top-8 left-1/2 w-full h-0.5 bg-gradient-to-r from-purple-400/50 to-indigo-400/50 z-0"></div>
+              <div className="hidden md:block absolute top-8 left-[63%] w-[88%] h-0.5 bg-gradient-to-r from-purple-400/50 to-indigo-400/50 z-0"></div>
             </div>
             
             <div className="relative">
@@ -195,7 +184,7 @@ function LandingPage() {
           <Button 
             size="lg" 
             className="bg-white text-slate-900 hover:bg-gray-100 px-10 py-4 text-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
-            onClick={() => window.location.href = '/onboarding'}
+            onClick={() => navigate('/onboarding')}
           >
             Start Building Now
           </Button>

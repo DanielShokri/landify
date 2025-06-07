@@ -34,8 +34,12 @@ export interface AIDesignSuggestion {
     reasoning: string;
   };
   layout: {
-    structure: 'hero-focused' | 'service-grid' | 'story-driven' | 'feature-list' | 'testimonial-heavy';
-    sections: string[];
+    structure: 'hero-focused' | 'service-grid' | 'story-driven' | 'feature-list' | 'testimonial-heavy' | 'restaurant-menu' | 'portfolio-showcase' | 'contact-first' | 'product-catalog';
+    heroStyle: 'full-screen' | 'split-content' | 'minimal-text' | 'image-background' | 'video-background' | 'centered-compact';
+    sectionOrder: string[];
+    contentLayout: 'single-column' | 'two-column' | 'grid-3' | 'grid-4' | 'asymmetric' | 'sidebar-left' | 'sidebar-right';
+    navigationStyle: 'top-bar' | 'side-menu' | 'minimal' | 'sticky-header' | 'hidden-scroll';
+    ctaPlacement: 'hero-only' | 'multiple-sections' | 'floating-button' | 'footer-focus' | 'inline-content';
     visualElements: string[];
     reasoning: string;
   };
@@ -187,8 +191,12 @@ Generate design recommendations in this JSON format:
     "reasoning": "Why these fonts convey the right brand message"
   },
   "layout": {
-    "structure": "hero-focused|service-grid|story-driven|feature-list|testimonial-heavy",
-    "sections": ["Hero", "Services", "About", "Testimonials", "Contact"],
+    "structure": "hero-focused|service-grid|story-driven|feature-list|testimonial-heavy|restaurant-menu|portfolio-showcase|contact-first|product-catalog",
+    "heroStyle": "full-screen|split-content|minimal-text|image-background|video-background|centered-compact",
+    "sectionOrder": ["Hero", "Services", "About", "Testimonials", "Contact"],
+    "contentLayout": "single-column|two-column|grid-3|grid-4|asymmetric|sidebar-left|sidebar-right",
+    "navigationStyle": "top-bar|side-menu|minimal|sticky-header|hidden-scroll",
+    "ctaPlacement": "hero-only|multiple-sections|floating-button|footer-focus|inline-content",
     "visualElements": ["Large hero image", "Service icons", "Customer photos"],
     "reasoning": "Why this layout works for this business type"
   },
@@ -220,59 +228,161 @@ Consider:
 
   private parseDesignSuggestions(content: string, request: DesignRequest): AIDesignSuggestion {
     try {
-      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      console.log('🔍 Parsing AI response content:', content.substring(0, 200) + '...');
+      
+      // Extract JSON from the response with better regex
+      const jsonMatch = content.match(/\{[\s\S]*?\}(?=\s*$|\s*[^}]*$)/);
       if (!jsonMatch) {
+        console.warn('⚠️ No JSON object found in AI response');
         throw new Error('No JSON found in response');
       }
 
-      const suggestions = JSON.parse(jsonMatch[0]);
+      let jsonString = jsonMatch[0];
+      console.log('📄 Extracted JSON string:', jsonString.substring(0, 200) + '...');
+
+      // Clean up common JSON formatting issues from AI responses
+      jsonString = this.cleanupAIJsonResponse(jsonString);
+
+      let suggestions;
+      try {
+        suggestions = JSON.parse(jsonString);
+        console.log('✅ Successfully parsed JSON from AI response');
+      } catch (parseError) {
+        console.error('❌ JSON parsing failed, attempting to fix common issues:', parseError);
+        
+        // Try to fix common AI JSON formatting issues
+        const fixedJson = this.attemptJsonFix(jsonString);
+        suggestions = JSON.parse(fixedJson);
+        console.log('✅ Successfully parsed JSON after fixing formatting issues');
+      }
       
-      // Validate and ensure all required fields
-      return {
-        colorPalette: {
-          primary: suggestions.colorPalette?.primary || '#3b82f6',
-          secondary: suggestions.colorPalette?.secondary || '#64748b',
-          accent: suggestions.colorPalette?.accent || '#f59e0b',
-          background: suggestions.colorPalette?.background || '#ffffff',
-          backgroundSecondary: suggestions.colorPalette?.backgroundSecondary || '#f8fafc',
-          text: suggestions.colorPalette?.text || '#1e293b',
-          textSecondary: suggestions.colorPalette?.textSecondary || '#64748b',
-          cardBackground: suggestions.colorPalette?.cardBackground || '#ffffff',
-          cardBorder: suggestions.colorPalette?.cardBorder || '#e2e8f0',
-          gradientFrom: suggestions.colorPalette?.gradientFrom || '#3b82f6',
-          gradientTo: suggestions.colorPalette?.gradientTo || '#1d4ed8',
-          reasoning: suggestions.colorPalette?.reasoning || 'Colors chosen for professional appearance and trust-building'
-        },
-        typography: {
-          headingFont: suggestions.typography?.headingFont || 'Inter, system-ui, sans-serif',
-          bodyFont: suggestions.typography?.bodyFont || 'Inter, system-ui, sans-serif',
-          accentFont: suggestions.typography?.accentFont,
-          reasoning: suggestions.typography?.reasoning || 'Modern, readable fonts for digital clarity'
-        },
-        layout: {
-          structure: suggestions.layout?.structure || 'hero-focused',
-          sections: suggestions.layout?.sections || ['Hero', 'Services', 'About', 'Contact'],
-          visualElements: suggestions.layout?.visualElements || ['Hero image', 'Service cards'],
-          reasoning: suggestions.layout?.reasoning || 'Layout optimized for conversion and user flow'
-        },
-        visualElements: {
-          iconStyle: suggestions.visualElements?.iconStyle || 'minimalist',
-          imageFilters: suggestions.visualElements?.imageFilters || ['subtle warmth'],
-          backgroundPatterns: suggestions.visualElements?.backgroundPatterns || [],
-          animations: suggestions.visualElements?.animations || ['fade in'],
-          reasoning: suggestions.visualElements?.reasoning || 'Clean, modern visual approach'
-        },
-        brandingElements: {
-          logoSuggestions: suggestions.brandingElements?.logoSuggestions || ['Text-based logo'],
-          taglineSuggestions: suggestions.brandingElements?.taglineSuggestions || ['Your trusted partner'],
-          visualMetaphors: suggestions.brandingElements?.visualMetaphors || [],
-          reasoning: suggestions.brandingElements?.reasoning || 'Branding elements build trust and recognition'
-        }
-      };
+      // Validate and ensure all required fields with robust fallbacks
+      return this.validateAndNormalizeSuggestions(suggestions, request);
+      
     } catch (error) {
-      console.error('Error parsing design suggestions:', error);
+      console.error('❌ Error parsing design suggestions:', error);
+      console.log('🔄 Falling back to industry-based design suggestions');
       return this.getFallbackDesignSuggestions(request);
     }
+  }
+
+  private cleanupAIJsonResponse(jsonString: string): string {
+    // Remove any text before the first {
+    jsonString = jsonString.substring(jsonString.indexOf('{'));
+    
+    // Remove any text after the last }
+    const lastBraceIndex = jsonString.lastIndexOf('}');
+    if (lastBraceIndex !== -1) {
+      jsonString = jsonString.substring(0, lastBraceIndex + 1);
+    }
+    
+    // Remove comments and explanatory text that AI might add
+    jsonString = jsonString.replace(/\/\/.*$/gm, ''); // Remove line comments
+    jsonString = jsonString.replace(/\/\*[\s\S]*?\*\//g, ''); // Remove block comments
+    
+    return jsonString.trim();
+  }
+
+  private attemptJsonFix(jsonString: string): string {
+    let fixed = jsonString;
+    
+    // Fix single quotes to double quotes for property names and string values
+    fixed = fixed.replace(/'/g, '"');
+    
+    // Fix unquoted property names (word followed by colon)
+    fixed = fixed.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":');
+    
+    // Fix trailing commas
+    fixed = fixed.replace(/,(\s*[}\]])/g, '$1');
+    
+    // Fix multiple spaces and newlines
+    fixed = fixed.replace(/\s+/g, ' ');
+    
+    // Ensure proper array and object formatting
+    fixed = fixed.replace(/,\s*}/g, '}');
+    fixed = fixed.replace(/,\s*]/g, ']');
+    
+    return fixed;
+  }
+
+  private validateAndNormalizeSuggestions(suggestions: any, request: DesignRequest): AIDesignSuggestion {
+    return {
+      colorPalette: {
+        primary: this.validateColor(suggestions.colorPalette?.primary) || '#3b82f6',
+        secondary: this.validateColor(suggestions.colorPalette?.secondary) || '#64748b',
+        accent: this.validateColor(suggestions.colorPalette?.accent) || '#f59e0b',
+        background: this.validateColor(suggestions.colorPalette?.background) || '#ffffff',
+        backgroundSecondary: this.validateColor(suggestions.colorPalette?.backgroundSecondary) || '#f8fafc',
+        text: this.validateColor(suggestions.colorPalette?.text) || '#1e293b',
+        textSecondary: this.validateColor(suggestions.colorPalette?.textSecondary) || '#64748b',
+        cardBackground: this.validateColor(suggestions.colorPalette?.cardBackground) || '#ffffff',
+        cardBorder: this.validateColor(suggestions.colorPalette?.cardBorder) || '#e2e8f0',
+        gradientFrom: this.validateColor(suggestions.colorPalette?.gradientFrom) || '#3b82f6',
+        gradientTo: this.validateColor(suggestions.colorPalette?.gradientTo) || '#1d4ed8',
+        reasoning: suggestions.colorPalette?.reasoning || 'Colors chosen for professional appearance and trust-building'
+      },
+      typography: {
+        headingFont: suggestions.typography?.headingFont || 'Inter, system-ui, sans-serif',
+        bodyFont: suggestions.typography?.bodyFont || 'Inter, system-ui, sans-serif',
+        accentFont: suggestions.typography?.accentFont,
+        reasoning: suggestions.typography?.reasoning || 'Modern, readable fonts for digital clarity'
+      },
+      layout: {
+        structure: (this.validateLayoutStructure(suggestions.layout?.structure) || 'hero-focused') as AIDesignSuggestion['layout']['structure'],
+        heroStyle: (this.validateHeroStyle(suggestions.layout?.heroStyle) || 'full-screen') as AIDesignSuggestion['layout']['heroStyle'],
+        sectionOrder: Array.isArray(suggestions.layout?.sectionOrder) ? suggestions.layout.sectionOrder : ['Hero', 'Services', 'About', 'Contact'],
+        contentLayout: (this.validateContentLayout(suggestions.layout?.contentLayout) || 'single-column') as AIDesignSuggestion['layout']['contentLayout'],
+        navigationStyle: (this.validateNavigationStyle(suggestions.layout?.navigationStyle) || 'top-bar') as AIDesignSuggestion['layout']['navigationStyle'],
+        ctaPlacement: (this.validateCTAPlacement(suggestions.layout?.ctaPlacement) || 'hero-only') as AIDesignSuggestion['layout']['ctaPlacement'],
+        visualElements: Array.isArray(suggestions.layout?.visualElements) ? suggestions.layout.visualElements : ['Hero image', 'Service cards'],
+        reasoning: suggestions.layout?.reasoning || 'Layout optimized for conversion and user flow'
+      },
+      visualElements: {
+        iconStyle: suggestions.visualElements?.iconStyle || 'minimalist',
+        imageFilters: Array.isArray(suggestions.visualElements?.imageFilters) ? suggestions.visualElements.imageFilters : ['subtle warmth'],
+        backgroundPatterns: Array.isArray(suggestions.visualElements?.backgroundPatterns) ? suggestions.visualElements.backgroundPatterns : [],
+        animations: Array.isArray(suggestions.visualElements?.animations) ? suggestions.visualElements.animations : ['fade in'],
+        reasoning: suggestions.visualElements?.reasoning || 'Clean, modern visual approach'
+      },
+      brandingElements: {
+        logoSuggestions: Array.isArray(suggestions.brandingElements?.logoSuggestions) ? suggestions.brandingElements.logoSuggestions : ['Text-based logo'],
+        taglineSuggestions: Array.isArray(suggestions.brandingElements?.taglineSuggestions) ? suggestions.brandingElements.taglineSuggestions : ['Your trusted partner'],
+        visualMetaphors: Array.isArray(suggestions.brandingElements?.visualMetaphors) ? suggestions.brandingElements.visualMetaphors : [],
+        reasoning: suggestions.brandingElements?.reasoning || 'Branding elements build trust and recognition'
+      }
+    };
+  }
+
+  private validateColor(color: any): string | null {
+    if (typeof color !== 'string') return null;
+    // Basic color validation - hex, rgb, hsl, or named colors
+    const colorRegex = /^(#[0-9A-Fa-f]{3,8}|rgb\(|rgba\(|hsl\(|hsla\(|\w+).*$/;
+    return colorRegex.test(color.trim()) ? color.trim() : null;
+  }
+
+  private validateLayoutStructure(structure: any): string | null {
+    const validStructures = ['hero-focused', 'service-grid', 'story-driven', 'feature-list', 'testimonial-heavy', 'restaurant-menu', 'portfolio-showcase', 'contact-first', 'product-catalog'];
+    return validStructures.includes(structure) ? structure : null;
+  }
+
+  private validateHeroStyle(style: any): string | null {
+    const validStyles = ['full-screen', 'split-content', 'minimal-text', 'image-background', 'video-background', 'centered-compact'];
+    return validStyles.includes(style) ? style : null;
+  }
+
+  private validateContentLayout(layout: any): string | null {
+    const validLayouts = ['single-column', 'two-column', 'grid-3', 'grid-4', 'asymmetric', 'sidebar-left', 'sidebar-right'];
+    return validLayouts.includes(layout) ? layout : null;
+  }
+
+  private validateNavigationStyle(style: any): string | null {
+    const validStyles = ['top-bar', 'side-menu', 'minimal', 'sticky-header', 'hidden-scroll'];
+    return validStyles.includes(style) ? style : null;
+  }
+
+  private validateCTAPlacement(placement: any): string | null {
+    const validPlacements = ['hero-only', 'multiple-sections', 'floating-button', 'footer-focus', 'inline-content'];
+    return validPlacements.includes(placement) ? placement : null;
   }
 
   private getFallbackDesignSuggestions(request: DesignRequest): AIDesignSuggestion {
@@ -291,7 +401,11 @@ Consider:
       },
       layout: {
         structure: 'hero-focused',
-        sections: ['Hero', 'Services', 'About', 'Contact'],
+        heroStyle: 'full-screen',
+        sectionOrder: ['Hero', 'Services', 'About', 'Contact'],
+        contentLayout: 'single-column',
+        navigationStyle: 'top-bar',
+        ctaPlacement: 'hero-only',
         visualElements: ['Hero banner', 'Service grid', 'Contact form'],
         reasoning: 'Standard layout proven for conversion'
       },
@@ -373,7 +487,15 @@ Consider:
         heading: suggestions.typography.headingFont,
         body: suggestions.typography.bodyFont
       },
-      layout: 'single-page',
+      layout: {
+        type: 'single-page',
+        structure: suggestions.layout.structure,
+        heroStyle: suggestions.layout.heroStyle,
+        sectionOrder: suggestions.layout.sectionOrder,
+        contentLayout: suggestions.layout.contentLayout,
+        navigationStyle: suggestions.layout.navigationStyle,
+        ctaPlacement: suggestions.layout.ctaPlacement
+      },
       spacing: {
         sectionGap: '4rem',
         cardPadding: '1.5rem',

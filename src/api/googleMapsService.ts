@@ -8,6 +8,43 @@ class GoogleMapsService {
   private autocompleteService: google.maps.places.AutocompleteService | null = null;
   private isInitialized = false;
 
+  /**
+   * Helper method to check if a place is currently open
+   * Replaces the deprecated open_now field functionality
+   */
+  private isPlaceOpenNow(openingHours?: google.maps.places.PlaceOpeningHours): boolean {
+    if (!openingHours) return false;
+    
+    // Use the modern isOpen() method if available
+    if (openingHours.isOpen) {
+      return openingHours.isOpen() || false;
+    }
+    
+    // Fallback: basic check using periods (not as accurate but better than nothing)
+    if (openingHours.periods && openingHours.periods.length > 0) {
+      const now = new Date();
+      const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const currentTime = now.getHours() * 100 + now.getMinutes(); // HHMM format
+      
+      const todayPeriods = openingHours.periods.filter(period => 
+        period.open && period.open.day === currentDay
+      );
+      
+      for (const period of todayPeriods) {
+        if (period.open && period.close) {
+          const openTime = parseInt(period.open.time || '0000');
+          const closeTime = parseInt(period.close.time || '2359');
+          
+          if (currentTime >= openTime && currentTime <= closeTime) {
+            return true;
+          }
+        }
+      }
+    }
+    
+    return false;
+  }
+
   constructor() {
     this.apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
     this.loader = new Loader({
@@ -47,6 +84,15 @@ class GoogleMapsService {
         };
 
         this.placesService!.textSearch(request, (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus) => {
+          console.log('🔍 Google Places Text Search Response:');
+          console.log('Status:', status);
+          console.log('Raw Results:', results);
+          console.log('Number of results:', results?.length || 0);
+          
+          if (results && results.length > 0) {
+            console.log('📍 First Place Result (detailed):', JSON.stringify(results[0], null, 2));
+          }
+
           if (status === google.maps.places.PlacesServiceStatus.OK && results) {
             const mappedResults: BusinessSearchResult[] = results.map((place: google.maps.places.PlaceResult) => ({
               placeId: place.place_id || '',
@@ -95,11 +141,19 @@ class GoogleMapsService {
             'rating',
             'user_ratings_total',
             'business_status',
-            'types'
+            'types',
+            // Modern fields that replace deprecated ones
+            'opening_hours',        // Instead of opening_hours.open_now
+            'utc_offset_minutes'    // Instead of utc_offset
           ]
         };
 
         this.placesService!.getDetails(request, (place: google.maps.places.PlaceResult | null, status: google.maps.places.PlacesServiceStatus) => {
+          console.log('🏢 Google Places Details Response:');
+          console.log('Status:', status);
+          console.log('Raw Place Details:', place);
+          console.log('Place Details (formatted):', JSON.stringify(place, null, 2));
+
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
             const result: GoogleMapsPlace = {
               place_id: place.place_id || '',
@@ -116,7 +170,17 @@ class GoogleMapsService {
               rating: place.rating || 0,
               user_ratings_total: place.user_ratings_total || 0,
               business_status: place.business_status || 'OPERATIONAL',
-              types: place.types || []
+              types: place.types || [],
+              // Handle opening hours with modern approach  
+              opening_hours: place.opening_hours ? {
+                periods: place.opening_hours.periods,
+                weekday_text: place.opening_hours.weekday_text,
+                // Note: The modern isOpen() method is available on the Google Maps PlaceResult
+                // This replaces the deprecated open_now property
+                isOpen: place.opening_hours.isOpen
+              } : undefined,
+              // Use modern utc_offset_minutes instead of deprecated utc_offset
+              utc_offset_minutes: place.utc_offset_minutes
             };
             resolve(result);
           } else {
@@ -151,6 +215,24 @@ class GoogleMapsService {
         };
 
         this.autocompleteService!.getPlacePredictions(request, (predictions, status) => {
+          console.log('🔮 Google Places Autocomplete Response:');
+          console.log('Status:', status);
+          console.log('Input query:', input);
+          console.log('Raw Predictions:', predictions);
+          console.log('Number of predictions:', predictions?.length || 0);
+          
+          if (predictions && predictions.length > 0) {
+            console.log('📝 Autocomplete Predictions (detailed):');
+            predictions.forEach((prediction, index) => {
+              console.log(`${index + 1}.`, {
+                description: prediction.description,
+                place_id: prediction.place_id,
+                structured_formatting: prediction.structured_formatting,
+                types: prediction.types
+              });
+            });
+          }
+
           if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
             resolve(predictions);
           } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {

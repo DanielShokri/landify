@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { useContentGeneration } from '@/hooks/useContentGeneration';
 import { BusinessData } from '@/types/business';
 import { ContentGenerationRequest, GeneratedContent } from '@/types/content';
+import { Check } from 'lucide-react';
 
 function ContentGeneration() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ function ContentGeneration() {
   });
   const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const { generateContent } = useContentGeneration();
 
   useEffect(() => {
@@ -70,6 +72,31 @@ function ContentGeneration() {
     }
   };
 
+  const generateAIThemeSteps = [
+    '🎨 AI generating unique design theme...',
+    '📝 Creating custom content with AI...',
+    '🧠 Analyzing brand personality...',
+    '🌈 Crafting dynamic color schemes...',
+  ];
+
+  // Cycle through steps every 500ms when generating
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    
+    if (isGenerating) {
+      setCurrentStepIndex(0); // Reset to first step
+      interval = setInterval(() => {
+        setCurrentStepIndex(prev => (prev + 1) % generateAIThemeSteps.length);
+      }, 500);
+    }
+    
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [isGenerating, generateAIThemeSteps.length]);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
       {/* Background Effects */}
@@ -104,7 +131,7 @@ function ContentGeneration() {
                 Generation
               </span>
             </h1>
-            <p className="text-xl text-gray-300">
+            <p className="text-xl text-center text-gray-300">
               Our AI will create unique content and design for your landing page
             </p>
           </div>
@@ -201,15 +228,22 @@ function ContentGeneration() {
                     <div className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-purple-400 rounded-full mt-2"></div>
                       <div>
-                        <p className="text-white font-medium">Automatic Design Themes</p>
-                        <p className="text-gray-400 text-sm">Unique color schemes and layouts generated for each business</p>
+                        <p className="text-white font-medium">Unique AI-Generated Themes</p>
+                        <p className="text-gray-400 text-sm">Every business gets a completely unique design theme created by AI</p>
                       </div>
                     </div>
                     <div className="flex items-start space-x-3">
                       <div className="w-2 h-2 bg-green-400 rounded-full mt-2"></div>
                       <div>
-                        <p className="text-white font-medium">Industry Optimization</p>
-                        <p className="text-gray-400 text-sm">Content and design optimized for your specific industry</p>
+                        <p className="text-white font-medium">Dynamic Color Generation</p>
+                        <p className="text-gray-400 text-sm">AI analyzes your business and creates custom color schemes and typography</p>
+                      </div>
+                    </div>
+                    <div className="flex items-start space-x-3">
+                      <div className="w-2 h-2 bg-orange-400 rounded-full mt-2"></div>
+                      <div>
+                        <p className="text-white font-medium">Brand Personality Analysis</p>
+                        <p className="text-gray-400 text-sm">AI infers your brand personality and creates matching visual elements</p>
                       </div>
                     </div>
                   </div>
@@ -240,9 +274,9 @@ function ContentGeneration() {
             
             {isGenerating && (
               <div className="mt-4 text-gray-300 text-sm">
-                <p>🎨 Creating unique design theme...</p>
-                <p>📝 Generating custom content...</p>
-                <p>⚡ Optimizing for your industry...</p>
+                <p className="animate-pulse">
+                  {generateAIThemeSteps[currentStepIndex]}
+                </p>
               </div>
             )}
           </div>
@@ -253,9 +287,7 @@ function ContentGeneration() {
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-2xl font-semibold text-white">Generated Content Preview</h3>
                 <div className="flex items-center space-x-2 text-green-400">
-                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                  </svg>
+                  <Check className="w-5 h-5" />
                   <span className="text-sm font-medium">AI Generated</span>
                 </div>
               </div>

@@ -1,5 +1,5 @@
 import { Loader } from '@googlemaps/js-api-loader';
-import { GoogleMapsPlace, BusinessSearchResult } from '../types/business';
+import { GoogleMapsPlace, BusinessSearchResult, PlacePhoto, SocialMediaLinks } from '../types/business';
 
 class GoogleMapsService {
   private apiKey: string;
@@ -43,6 +43,55 @@ class GoogleMapsService {
     }
     
     return false;
+  }
+
+
+
+  /**
+   * Extract social media links from business website and other sources
+   */
+  private async extractSocialMediaLinks(place: google.maps.places.PlaceResult): Promise<SocialMediaLinks> {
+    const socialMedia: SocialMediaLinks = {};
+    
+    // Start with the website if available
+    if (place.website) {
+      socialMedia.website = place.website;
+      
+      // Try to detect social media patterns in the website URL
+      const url = place.website.toLowerCase();
+      if (url.includes('facebook.com')) socialMedia.facebook = place.website;
+      if (url.includes('instagram.com')) socialMedia.instagram = place.website;
+      if (url.includes('twitter.com') || url.includes('x.com')) socialMedia.twitter = place.website;
+      if (url.includes('linkedin.com')) socialMedia.linkedin = place.website;
+      if (url.includes('youtube.com')) socialMedia.youtube = place.website;
+      if (url.includes('tiktok.com')) socialMedia.tiktok = place.website;
+      if (url.includes('yelp.com')) socialMedia.yelp = place.website;
+    }
+
+    // Additional social media detection could be enhanced with:
+    // - Web scraping the business website for social media links
+    // - Cross-referencing with business directories
+    // - Using business name to search social platforms
+    
+    return socialMedia;
+  }
+
+  /**
+   * Helper to extract display name from HTML attribution
+   */
+  private extractNameFromAttribution(attribution: string): string {
+    // Simple regex to extract name from HTML attribution
+    const match = attribution.match(/>([^<]+)</);
+    return match ? match[1] : 'Unknown';
+  }
+
+  /**
+   * Helper to extract URI from HTML attribution  
+   */
+  private extractUriFromAttribution(attribution: string): string | undefined {
+    // Simple regex to extract href from HTML attribution
+    const match = attribution.match(/href="([^"]+)"/);
+    return match ? match[1] : undefined;
   }
 
   constructor() {
@@ -104,8 +153,7 @@ class GoogleMapsService {
               coordinates: {
                 lat: place.geometry?.location?.lat() || 0,
                 lng: place.geometry?.location?.lng() || 0
-              },
-              photos: []
+              }
             }));
             resolve(mappedResults);
           } else {
@@ -144,17 +192,25 @@ class GoogleMapsService {
             'types',
             // Modern fields that replace deprecated ones
             'opening_hours',        // Instead of opening_hours.open_now
-            'utc_offset_minutes'    // Instead of utc_offset
+            'utc_offset_minutes',   // Instead of utc_offset
+            // Additional rich data fields
+            'price_level',
+            'reviews',
+            'editorial_summary'
           ]
         };
 
-        this.placesService!.getDetails(request, (place: google.maps.places.PlaceResult | null, status: google.maps.places.PlacesServiceStatus) => {
+        this.placesService!.getDetails(request, async (place: google.maps.places.PlaceResult | null, status: google.maps.places.PlacesServiceStatus) => {
           console.log('🏢 Google Places Details Response:');
           console.log('Status:', status);
           console.log('Raw Place Details:', place);
-          console.log('Place Details (formatted):', JSON.stringify(place, null, 2));
 
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+            // Extract social media
+            const socialMedia = await this.extractSocialMediaLinks(place);
+            
+            console.log('📱 Extracted Social Media:', socialMedia);
+
             const result: GoogleMapsPlace = {
               place_id: place.place_id || '',
               name: place.name || '',
@@ -171,6 +227,7 @@ class GoogleMapsService {
               user_ratings_total: place.user_ratings_total || 0,
               business_status: place.business_status || 'OPERATIONAL',
               types: place.types || [],
+              photos: [],
               // Handle opening hours with modern approach  
               opening_hours: place.opening_hours ? {
                 periods: place.opening_hours.periods,

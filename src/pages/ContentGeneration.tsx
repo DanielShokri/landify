@@ -79,7 +79,7 @@ function ContentGeneration() {
     '🌈 Crafting dynamic color schemes...',
   ];
 
-  // Cycle through steps every 500ms when generating
+  // Cycle through steps every 800ms when generating
   useEffect(() => {
     let interval: NodeJS.Timeout;
     
@@ -87,7 +87,7 @@ function ContentGeneration() {
       setCurrentStepIndex(0); // Reset to first step
       interval = setInterval(() => {
         setCurrentStepIndex(prev => (prev + 1) % generateAIThemeSteps.length);
-      }, 500);
+      }, 800);
     }
     
     return () => {
@@ -258,16 +258,18 @@ function ContentGeneration() {
               onClick={handleGenerate}
               disabled={isGenerating || !businessData}
               size="lg"
-              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-12 py-4 text-lg font-semibold"
+              className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white px-6 py-3 text-base sm:px-12 sm:py-4 sm:text-lg font-semibold w-full max-w-md md:w-auto"
             >
               {isGenerating ? (
                 <>
-                  <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
-                  Generating with AI...
+                  <div className="animate-spin rounded-full h-4 w-4 sm:h-5 sm:w-5 border-b-2 border-white mr-2 sm:mr-3"></div>
+                  <span className="hidden sm:inline">Generating with AI...</span>
+                  <span className="sm:hidden">Generating...</span>
                 </>
               ) : (
                 <>
-                  ✨ Generate Landing Page with AI
+                  <span className="hidden sm:inline">✨ Generate Landing Page with AI</span>
+                  <span className="sm:hidden">✨ Generate Page</span>
                 </>
               )}
             </Button>

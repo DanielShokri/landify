@@ -75,15 +75,11 @@ function BusinessOnboarding() {
 
     // Fetch detailed information including photos and social media
     try {
-      console.log('🔍 Fetching detailed place information...');
       const placeDetails = await googleMapsService.getPlaceDetails(business.placeId);
       
       if (placeDetails) {
-        console.log('📋 Place details received:', placeDetails);
-        
         // Generate business-type-specific placeholder photos
         const businessType = placeDetails.types?.[0] || 'business';
-        console.log('📸 Generating business-type-specific placeholder photos for:', businessType);
         
         // Generate 3-5 placeholder photos with different variations
         const placeholderCount = Math.floor(Math.random() * 3) + 3; // 3-5 photos
@@ -128,7 +124,6 @@ function BusinessOnboarding() {
             twitter: `https://twitter.com/${businessName}`,
             yelp: `https://yelp.com/biz/${businessName}`
           };
-          console.log('💡 Suggested social media profiles:', suggestedSocial);
         }
 
         // Extract business hours from Google Places data
@@ -195,8 +190,7 @@ function BusinessOnboarding() {
           }
         }));
 
-        console.log('📸 Photos extracted:', photos.length);
-        console.log('📱 Social media links found:', socialMedia);
+
       }
     } catch (error) {
       console.error('Failed to fetch place details:', error);
@@ -223,7 +217,7 @@ function BusinessOnboarding() {
   };
 
   const handleContinue = () => {
-    console.log('Final business data for AI content generation:', businessData);
+
     // Navigate to content generation with business data
     const params = new URLSearchParams({
       businessData: JSON.stringify(businessData)

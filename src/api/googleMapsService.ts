@@ -133,14 +133,7 @@ class GoogleMapsService {
         };
 
         this.placesService!.textSearch(request, (results: google.maps.places.PlaceResult[] | null, status: google.maps.places.PlacesServiceStatus) => {
-          console.log('🔍 Google Places Text Search Response:');
-          console.log('Status:', status);
-          console.log('Raw Results:', results);
-          console.log('Number of results:', results?.length || 0);
           
-          if (results && results.length > 0) {
-            console.log('📍 First Place Result (detailed):', JSON.stringify(results[0], null, 2));
-          }
 
           if (status === google.maps.places.PlacesServiceStatus.OK && results) {
             const mappedResults: BusinessSearchResult[] = results.map((place: google.maps.places.PlaceResult) => ({
@@ -201,15 +194,9 @@ class GoogleMapsService {
         };
 
         this.placesService!.getDetails(request, async (place: google.maps.places.PlaceResult | null, status: google.maps.places.PlacesServiceStatus) => {
-          console.log('🏢 Google Places Details Response:');
-          console.log('Status:', status);
-          console.log('Raw Place Details:', place);
-
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
             // Extract social media
             const socialMedia = await this.extractSocialMediaLinks(place);
-            
-            console.log('📱 Extracted Social Media:', socialMedia);
 
             const result: GoogleMapsPlace = {
               place_id: place.place_id || '',
@@ -272,24 +259,6 @@ class GoogleMapsService {
         };
 
         this.autocompleteService!.getPlacePredictions(request, (predictions, status) => {
-          console.log('🔮 Google Places Autocomplete Response:');
-          console.log('Status:', status);
-          console.log('Input query:', input);
-          console.log('Raw Predictions:', predictions);
-          console.log('Number of predictions:', predictions?.length || 0);
-          
-          if (predictions && predictions.length > 0) {
-            console.log('📝 Autocomplete Predictions (detailed):');
-            predictions.forEach((prediction, index) => {
-              console.log(`${index + 1}.`, {
-                description: prediction.description,
-                place_id: prediction.place_id,
-                structured_formatting: prediction.structured_formatting,
-                types: prediction.types
-              });
-            });
-          }
-
           if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
             resolve(predictions);
           } else if (status === google.maps.places.PlacesServiceStatus.ZERO_RESULTS) {

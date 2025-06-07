@@ -26,8 +26,6 @@ class ThemeService {
     } = options;
 
     try {
-      console.log('🎨 Generating unique AI theme for:', businessData.name);
-      
       if (useAdvancedAI) {
         // Use advanced AI generation with detailed business analysis
         return await this.generateAdvancedAITheme(businessData, style, tone, targetAudience);
@@ -36,7 +34,6 @@ class ThemeService {
         return await this.generateSimplifiedAITheme(businessData, style, tone);
       }
     } catch (error) {
-      console.warn('⚠️ AI theme generation failed, using emergency fallback:', error);
       // Only as absolute last resort, generate a minimal unique theme
       return this.generateEmergencyFallbackTheme(businessData);
     }
@@ -62,7 +59,6 @@ class ThemeService {
     const suggestions = await aiDesignService.generateDesignSuggestions(designRequest);
     const theme = aiDesignService.convertToTheme(suggestions, businessData);
     
-    console.log('✅ Advanced AI theme generated successfully');
     return theme;
   }
 
@@ -85,7 +81,6 @@ class ThemeService {
     const suggestions = await aiDesignService.generateDesignSuggestions(designRequest);
     const theme = aiDesignService.convertToTheme(suggestions, businessData);
     
-    console.log('✅ Simplified AI theme generated successfully');
     return theme;
   }
 
@@ -153,10 +148,8 @@ class ThemeService {
 
     try {
       const themes = await Promise.all(promises);
-      console.log(`✅ Generated ${themes.length} unique theme variations`);
       return themes;
     } catch (error) {
-      console.error('❌ Failed to generate theme variations:', error);
       // Generate at least one theme
       return [await this.generateTheme(businessData, { useAdvancedAI: false })];
     }
@@ -384,7 +377,6 @@ class ThemeService {
    * Now redirects to AI generation
    */
   generateThemeByCategory(category: string, businessData: BusinessData): Promise<LandingPageTheme> {
-    console.log(`🔄 Legacy category "${category}" redirected to AI generation`);
     return this.generateTheme(businessData, {
       style: this.mapCategoryToStyle(category),
       tone: this.mapCategoryToTone(category)

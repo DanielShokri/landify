@@ -355,7 +355,7 @@ function LandingPageEditor() {
                   <Button 
                     onClick={() => setActiveTab('preview')}
                     variant="outline"
-                    className="border-white/20 text-white hover:bg-white/10 hover:text-white hover:border-white/40 transition-all duration-300"
+                    className="border-white/20 text-black hover:bg-white/10 hover:text-white hover:border-white/40 transition-all duration-300"
                     size="lg"
                   >
                     👀 Preview

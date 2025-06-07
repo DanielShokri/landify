@@ -22,13 +22,13 @@ class OpenAIService {
   async generateLandingPageContent(request: ContentGenerationRequest): Promise<GeneratedContent> {
     const { businessData, tone = 'professional', style = 'modern', targetAudience, industry } = request;
 
-    console.log('🚀 Starting comprehensive content and design generation...');
+    console.log('🚀 Starting comprehensive AI content and design generation...');
 
     try {
       // Generate content and AI theme in parallel for better performance
       const [contentResult, aiThemeResult] = await Promise.allSettled([
         this.generateContent(businessData, tone, style, targetAudience, industry),
-        this.generateAITheme(businessData, tone, style, targetAudience)
+        this.generateUniqueAITheme(businessData, tone, style, targetAudience)
       ]);
 
       let content: Omit<GeneratedContent, 'theme'>;
@@ -46,10 +46,11 @@ class OpenAIService {
       // Handle AI theme generation result
       if (aiThemeResult.status === 'fulfilled' && aiThemeResult.value) {
         theme = aiThemeResult.value;
-        console.log('✅ AI theme generation successful');
+        console.log('✅ Unique AI theme generation successful');
       } else {
-        console.warn('⚠️ AI theme generation failed, using industry-based theme');
-        theme = themeService.generateTheme(businessData);
+        console.warn('⚠️ AI theme generation failed, generating emergency theme');
+        // Use emergency theme generation as fallback
+        theme = await this.generateEmergencyTheme(businessData, tone, style);
       }
 
       return {
@@ -59,9 +60,9 @@ class OpenAIService {
     } catch (error) {
       console.error('Error in comprehensive generation:', error);
       
-      // Fallback to basic generation
+      // Fallback to basic generation with emergency theme
       const content = this.getFallbackContent(businessData);
-      const theme = themeService.generateTheme(businessData);
+      const theme = await this.generateEmergencyTheme(businessData, tone, style);
       
       return {
         ...content,
@@ -103,32 +104,94 @@ class OpenAIService {
     return this.parseGeneratedContent(content, businessData);
   }
 
-  private async generateAITheme(
+  private async generateUniqueAITheme(
     businessData: BusinessData,
     tone: string,
     style: string,
     targetAudience?: string
   ) {
     try {
-      console.log('🎨 Auto-generating AI theme for:', businessData.name);
+      console.log('🎨 Auto-generating unique AI theme for:', businessData.name);
       
-      // Create a design request based on the business data and content preferences
-      const designRequest = {
-        businessData,
+      // Use the new AI-driven theme service
+      const theme = await themeService.generateTheme(businessData, {
+        style: this.mapStyleToDesignStyle(style),
+        tone: tone as any,
         targetAudience,
-        designStyle: this.mapStyleToDesignStyle(style),
-        brandPersonality: this.inferBrandPersonality(businessData, tone),
-        customRequests: `Generate a unique design that reflects the business type: ${businessData.type}`
-      };
-
-      const suggestions = await aiDesignService.generateDesignSuggestions(designRequest);
-      const theme = aiDesignService.convertToTheme(suggestions, businessData);
+        useAdvancedAI: true
+      });
       
-      console.log('✅ AI theme auto-generated successfully');
+      console.log('✅ Unique AI theme auto-generated successfully');
       return theme;
     } catch (error) {
-      console.warn('⚠️ AI theme auto-generation failed:', error);
-      return null; // Will fallback to industry-based theme
+      console.warn('⚠️ Advanced AI theme auto-generation failed:', error);
+      return null; // Will fallback to emergency theme
+    }
+  }
+
+  private async generateEmergencyTheme(
+    businessData: BusinessData,
+    tone: string,
+    style: string
+  ) {
+    try {
+      console.log('🔧 Generating emergency unique theme...');
+      
+      // Try simplified AI generation first
+      const theme = await themeService.generateTheme(businessData, {
+        style: this.mapStyleToDesignStyle(style),
+        tone: tone as any,
+        useAdvancedAI: false // Use simplified AI
+      });
+      
+      console.log('✅ Emergency AI theme generated');
+      return theme;
+    } catch (error) {
+      console.error('❌ Emergency AI theme failed, using absolute fallback');
+      
+      // Create a minimal but unique theme manually
+      return {
+        id: `emergency_${Date.now()}`,
+        name: `Emergency Theme for ${businessData.name}`,
+        businessType: businessData.type,
+        layout: {
+          type: 'single-page' as const,
+          structure: 'hero-focused' as const,
+          heroStyle: 'full-screen' as const,
+          sectionOrder: ['Hero', 'Services', 'About', 'Contact'],
+          contentLayout: 'single-column' as const,
+          navigationStyle: 'top-bar' as const,
+          ctaPlacement: 'hero-only' as const
+        },
+        colors: {
+          primary: '#3b82f6',
+          secondary: '#6366f1',
+          accent: '#8b5cf6',
+          background: '#ffffff',
+          backgroundSecondary: '#f8fafc',
+          text: '#1e293b',
+          textSecondary: '#64748b',
+          cardBackground: '#ffffff',
+          cardBorder: '#e2e8f0',
+          gradientFrom: '#3b82f6',
+          gradientTo: '#6366f1'
+        },
+        fonts: {
+          heading: 'Inter, sans-serif',
+          body: 'Inter, sans-serif'
+        },
+        effects: {
+          cardBlur: true,
+          gradientBackground: true,
+          animations: true,
+          shadows: 'medium' as const
+        },
+        spacing: {
+          sectionGap: '4rem',
+          cardPadding: '1.5rem',
+          containerMaxWidth: '1200px'
+        }
+      };
     }
   }
 
@@ -283,40 +346,7 @@ Ensure the content is:
     }
   }
 
-  private getFallbackContent(businessData: BusinessData): GeneratedContent {
-    const theme = themeService.generateTheme(businessData);
-    
-    return {
-      headline: `Welcome to ${businessData.name}`,
-      subheadline: `Your trusted ${businessData.type.toLowerCase()} in ${businessData.address.split(',')[0]}`,
-      valuePropositions: [
-        'Quality service you can trust',
-        'Experienced professionals',
-        'Customer satisfaction guaranteed'
-      ],
-      services: [{
-        name: 'Our Services',
-        description: businessData.description || 'Professional services tailored to your needs',
-        features: ['High quality', 'Reliable', 'Affordable']
-      }],
-      callToAction: {
-        primary: {
-          text: 'Contact Us Today',
-          action: 'contact'
-        }
-      },
-      aboutSection: `${businessData.name} is a trusted ${businessData.type.toLowerCase()} serving the local community with excellence and dedication.`,
-      contactInfo: {
-        phone: businessData.phone,
-        address: businessData.address,
-        email: businessData.email,
-        website: businessData.website
-      },
-      theme
-    };
-  }
-
-  private getFallbackContentWithoutTheme(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
+  private getFallbackContent(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
     return {
       headline: `Welcome to ${businessData.name}`,
       subheadline: `Your trusted ${businessData.type.toLowerCase()} in ${businessData.address.split(',')[0]}`,
@@ -344,6 +374,10 @@ Ensure the content is:
         website: businessData.website
       }
     };
+  }
+
+  private getFallbackContentWithoutTheme(businessData: BusinessData): Omit<GeneratedContent, 'theme'> {
+    return this.getFallbackContent(businessData);
   }
 }
 

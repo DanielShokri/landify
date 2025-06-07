@@ -87,7 +87,15 @@ export interface LandingPageTheme {
     heading: string;
     body: string;
   };
-  layout: 'single-page' | 'multi-section' | 'sidebar';
+  layout: {
+    type: 'single-page' | 'multi-section' | 'sidebar';
+    structure: 'hero-focused' | 'service-grid' | 'story-driven' | 'feature-list' | 'testimonial-heavy' | 'restaurant-menu' | 'portfolio-showcase' | 'contact-first' | 'product-catalog';
+    heroStyle: 'full-screen' | 'split-content' | 'minimal-text' | 'image-background' | 'video-background' | 'centered-compact';
+    sectionOrder: string[];
+    contentLayout: 'single-column' | 'two-column' | 'grid-3' | 'grid-4' | 'asymmetric' | 'sidebar-left' | 'sidebar-right';
+    navigationStyle: 'top-bar' | 'side-menu' | 'minimal' | 'sticky-header' | 'hidden-scroll';
+    ctaPlacement: 'hero-only' | 'multiple-sections' | 'floating-button' | 'footer-focus' | 'inline-content';
+  };
   spacing: {
     sectionGap: string;
     cardPadding: string;

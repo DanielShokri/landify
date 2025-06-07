@@ -65,17 +65,13 @@ export interface GoogleMapsPlace {
     width: number;
   }[];
   opening_hours?: {
-    open_now?: boolean;
-    periods?: {
-      close: {
-        day: number;
-        time: string;
-      };
-      open: {
-        day: number;
-        time: string;
-      };
-    }[];
+    // Note: open_now is deprecated as of November 2019
+    // Use the isOpen() method instead when available from Google Places API
+    periods?: google.maps.places.PlaceOpeningHoursPeriod[];
     weekday_text?: string[]; // e.g., ["Monday: 9:00 AM – 5:00 PM"]
+    // Modern method to check if place is open (replaces deprecated open_now)
+    isOpen?: (date?: Date) => boolean | undefined;
   };
+  // Added to replace deprecated utc_offset
+  utc_offset_minutes?: number;
 }

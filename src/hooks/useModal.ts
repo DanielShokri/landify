@@ -12,7 +12,7 @@ export function useModal(initialState = false) {
     openModal,
     closeModal,
     toggleModal,
-    setIsOpen,
+    setIsOpen
   };
 }
 
@@ -24,13 +24,13 @@ export function useConfirmationModal() {
     description: string;
     onConfirm: (() => void) | null;
     variant?: 'destructive' | 'warning' | 'default';
-  }>({
-    isOpen: false,
-    title: '',
-    description: '',
-    onConfirm: null,
-    variant: 'default',
-  });
+      }>({
+        isOpen: false,
+        title: '',
+        description: '',
+        onConfirm: null,
+        variant: 'default'
+      });
 
   const openConfirmation = (
     title: string,
@@ -43,7 +43,7 @@ export function useConfirmationModal() {
       title,
       description,
       onConfirm,
-      variant,
+      variant
     });
   };
 
@@ -51,7 +51,7 @@ export function useConfirmationModal() {
     setState(prev => ({
       ...prev,
       isOpen: false,
-      onConfirm: null,
+      onConfirm: null
     }));
   };
 
@@ -66,6 +66,6 @@ export function useConfirmationModal() {
     ...state,
     openConfirmation,
     closeConfirmation,
-    confirm,
+    confirm
   };
 } 

@@ -1,5 +1,5 @@
 import { MapPin } from 'lucide-react';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 // Use the Google Maps AutocompletePrediction type directly
@@ -21,7 +21,7 @@ const AutocompleteDropdown = ({
     const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
     const dropdownRef = useRef<HTMLDivElement>(null);
 
-    const updatePosition = () => {
+    const updatePosition = useCallback(() => {
         if (inputRef?.current) {
             const inputRect = inputRef.current.getBoundingClientRect();
             setPosition({
@@ -30,11 +30,11 @@ const AutocompleteDropdown = ({
                 width: inputRect.width
             });
         }
-    };
+    }, [inputRef]);
 
     useEffect(() => {
         updatePosition();
-    }, [inputRef, suggestions]);
+    }, [updatePosition, suggestions]);
 
     useEffect(() => {
         const handleScroll = () => updatePosition();
@@ -47,7 +47,7 @@ const AutocompleteDropdown = ({
             window.removeEventListener('scroll', handleScroll, true);
             window.removeEventListener('resize', handleResize);
         };
-    }, [inputRef]);
+    }, [updatePosition]);
 
     const dropdownContent = (
         <div

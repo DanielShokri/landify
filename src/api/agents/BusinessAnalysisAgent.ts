@@ -1,4 +1,5 @@
-import { AgentContext, AgentResponse, AgentType, BaseEvent } from '@/types/agents';
+import type { AgentContext, AgentResponse, BaseEvent } from '@/types/agents';
+import { AgentType } from '@/types/agents';
 import OpenAI from 'openai';
 import { Observable } from 'rxjs';
 import { BaseAgent } from './BaseAgent';
@@ -13,10 +14,10 @@ export class BusinessAnalysisAgent extends BaseAgent {
       description: 'Analyzes business context, positioning, and customer insights'
     });
     this.context = context;
-          this.openai = new OpenAI({
-        apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-        dangerouslyAllowBrowser: true
-      });
+    this.openai = new OpenAI({
+      apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
+      dangerouslyAllowBrowser: true
+    });
   }
 
   run(input: { threadId?: string; runId?: string }): Observable<BaseEvent> {
@@ -73,7 +74,7 @@ Respond in JSON according to this schema exactly:
       max_tokens: 2000
     });
 
-    let resp = this.parseResponse(first.choices[0]?.message?.content || '');
+    const resp = this.parseResponse(first.choices[0]?.message?.content || '');
 
     // self-critique pass
     const critique = await this.openai.chat.completions.create({
@@ -98,8 +99,8 @@ User needs: ${JSON.stringify(this.context.userRequirements, null,2)}
 Please analyze this business in its market context. Use step-by-step reasoning, then output JSON.`;
   }
 
-     private getFewShotExamples(): OpenAI.Chat.Completions.ChatCompletionMessageParam[] {
-     const ex1 = `
+  private getFewShotExamples(): OpenAI.Chat.Completions.ChatCompletionMessageParam[] {
+    const ex1 = `
  Example:
  Business: "Corner Café" at downtown city center. Data: small café, local coffee roasters, tourist foot traffic.
  Step-by-step reasoning:
@@ -113,7 +114,7 @@ Please analyze this business in its market context. Use step-by-step reasoning, 
    "confidence": 80,
    "reasoning": "Downtown location attracts both tourists and remote workers"
  }`;
-     const ex2 = `
+    const ex2 = `
  Example:
  Business: "QuickFix Plumbing" suburban area. Reasoning steps...
  Final JSON:
@@ -123,11 +124,11 @@ Please analyze this business in its market context. Use step-by-step reasoning, 
    "confidence": 85,
    "reasoning": "Suburban homeowners need reliable emergency plumbing"
  }`;
-     return [
-       { role: 'assistant' as const, content: ex1 },
-       { role: 'assistant' as const, content: ex2 }
-     ];
-   }
+    return [
+      { role: 'assistant' as const, content: ex1 },
+      { role: 'assistant' as const, content: ex2 }
+    ];
+  }
 
   private parseResponse(content: string): AgentResponse {
     try {

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
-import { BusinessSearchResult } from '../types/business';
+import type { BusinessSearchResult } from '../types/business';
 import { googleMapsService } from '../api/googleMapsService';
 
 export function useBusinessSearch() {

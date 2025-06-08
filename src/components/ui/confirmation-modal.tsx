@@ -6,7 +6,7 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
+  DialogTitle
 } from './dialog';
 
 interface ConfirmationModalProps {
@@ -32,7 +32,7 @@ export function ConfirmationModal({
   onConfirm,
   onCancel,
   variant = 'default',
-  isLoading = false,
+  isLoading = false
 }: ConfirmationModalProps) {
   const handleCancel = () => {
     if (onCancel) {
@@ -49,23 +49,23 @@ export function ConfirmationModal({
 
   const getIcon = () => {
     switch (variant) {
-      case 'destructive':
-        return <Trash2 className="h-6 w-6 text-red-500" />;
-      case 'warning':
-        return <AlertTriangle className="h-6 w-6 text-yellow-500" />;
-      default:
-        return null;
+    case 'destructive':
+      return <Trash2 className="h-6 w-6 text-red-500" />;
+    case 'warning':
+      return <AlertTriangle className="h-6 w-6 text-yellow-500" />;
+    default:
+      return null;
     }
   };
 
   const getConfirmButtonVariant = () => {
     switch (variant) {
-      case 'destructive':
-        return 'destructive';
-      case 'warning':
-        return 'default';
-      default:
-        return 'default';
+    case 'destructive':
+      return 'destructive';
+    case 'warning':
+      return 'default';
+    default:
+      return 'default';
     }
   };
 

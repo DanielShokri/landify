@@ -1,5 +1,5 @@
-import { BusinessData } from '@/types/business';
-import { GeneratedContent } from '@/types/content';
+import type { BusinessData } from '@/types/business';
+import type { GeneratedContent } from '@/types/content';
 import { generateUUID } from './uuid';
 
 export interface LandingPageData {

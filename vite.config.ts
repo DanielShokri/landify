@@ -7,18 +7,18 @@ export default defineConfig({
   plugins: [react()],
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, './src'),
-    },
+      '@': path.resolve(__dirname, './src')
+    }
   },
   server: {
     port: 3000,
-    open: true,
+    open: true
   },
   build: {
     outDir: 'dist',
-    sourcemap: true,
+    sourcemap: true
   },
   define: {
-    global: 'globalThis',
-  },
+    global: 'globalThis'
+  }
 }); 

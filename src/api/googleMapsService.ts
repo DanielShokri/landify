@@ -1,5 +1,5 @@
 import { Loader } from '@googlemaps/js-api-loader';
-import { BusinessSearchResult, GoogleMapsPlace, SocialMediaLinks } from '../types/business';
+import type { BusinessSearchResult, GoogleMapsPlace, SocialMediaLinks } from '../types/business';
 
 class GoogleMapsService {
   private apiKey: string;
@@ -52,7 +52,7 @@ class GoogleMapsService {
     this.loader = new Loader({
       apiKey: this.apiKey,
       version: 'weekly',
-      libraries: ['places'],
+      libraries: ['places']
     });
   }
 
@@ -209,7 +209,7 @@ class GoogleMapsService {
       return new Promise((resolve, reject) => {
         const request: google.maps.places.AutocompletionRequest = {
           input,
-          types: ['establishment'],
+          types: ['establishment']
           // No country restrictions - allows global results
         };
 

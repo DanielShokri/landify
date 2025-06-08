@@ -1,5 +1,6 @@
-import { BaseEvent, EventType, IAgent } from '@/types/agents';
-import { Observable } from 'rxjs';
+import type { BaseEvent, IAgent } from '@/types/agents';
+import { EventType } from '@/types/agents';
+import type { Observable } from 'rxjs';
 
 export abstract class BaseAgent implements IAgent {
   public readonly agentId: string;

@@ -1,6 +1,6 @@
-import { Observable } from 'rxjs';
-import { BusinessData } from './business';
-import { ContentGenerationRequest } from './content';
+import type { Observable } from 'rxjs';
+import type { BusinessData } from './business';
+import type { ContentGenerationRequest } from './content';
 
 // Core Agent Types
 export enum AgentType {

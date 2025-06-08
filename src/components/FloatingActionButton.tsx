@@ -45,7 +45,7 @@ export function FloatingActionButton({ pageId, businessName, htmlContent }: Floa
       navigator.share({
         title: `${businessName} - Landing Page`,
         text: `Check out the landing page for ${businessName}`,
-        url: window.location.href,
+        url: window.location.href
       });
     } else {
       // Fallback to copying URL to clipboard
@@ -205,7 +205,7 @@ export function FloatingActionButton({ pageId, businessName, htmlContent }: Floa
         className={`h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center hover:scale-105 ${isMenuOpen
           ? 'bg-red-500 hover:bg-red-600 rotate-180'
           : 'bg-indigo-500 hover:bg-indigo-600'
-          } text-white`}
+        } text-white`}
       >
         {isMenuOpen ? (
           <X className="h-6 w-6" />

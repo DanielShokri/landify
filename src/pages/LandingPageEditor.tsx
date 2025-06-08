@@ -4,8 +4,8 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Textarea } from '@/components/ui/textarea';
 import { landingPageStorage } from '@/lib/landingPageStorage';
-import { BusinessData } from '@/types/business';
-import { GeneratedContent } from '@/types/content';
+import type { BusinessData } from '@/types/business';
+import type { GeneratedContent } from '@/types/content';
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 

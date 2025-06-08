@@ -1,4 +1,5 @@
-import { AgentContext, AgentResponse, AgentType, BaseEvent } from '@/types/agents';
+import type { AgentContext, AgentResponse, BaseEvent } from '@/types/agents';
+import { AgentType } from '@/types/agents';
 import OpenAI from 'openai';
 import { Observable } from 'rxjs';
 import { BaseAgent } from './BaseAgent';
@@ -13,10 +14,10 @@ export class ContentStrategyAgent extends BaseAgent {
       description: 'Creates content strategy and messaging framework'
     });
     this.context = context;
-          this.openai = new OpenAI({
-        apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-        dangerouslyAllowBrowser: true
-      });
+    this.openai = new OpenAI({
+      apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
+      dangerouslyAllowBrowser: true
+    });
   }
 
   run(input: { threadId?: string; runId?: string }): Observable<BaseEvent> {
@@ -71,7 +72,7 @@ Think step by step, outline your reasoning, then output JSON:
       max_tokens: 2000
     });
 
-    let resp = this.parseResponse(initial.choices[0]?.message?.content || '');
+    const resp = this.parseResponse(initial.choices[0]?.message?.content || '');
 
     const critique = await this.openai.chat.completions.create({
       model: 'gpt-4o-mini',

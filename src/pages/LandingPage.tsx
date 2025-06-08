@@ -20,7 +20,7 @@ function LandingPage() {
         </h1>
         <p className="text-xl text-center text-gray-300 max-w-3xl mx-auto leading-relaxed mb-10">
           Our AI automatically generates unique designs and content for every business.
-          From your business info to a professional landing page in minutes - completely automated.
+          From your business info to a professional landing page in under 15 seconds - completely automated.
         </p>
 
         <div className="flex flex-col md:flex-row gap-4 md:gap-6 justify-center items-center mb-16">
@@ -65,11 +65,11 @@ function LandingPage() {
 
           <FeatureCard
             icon={Clock}
-            title="Ready in Minutes"
-            description="From business info to professional landing page in under 5 minutes"
+            title="Lightning Fast"
+            description="From business info to professional landing page in under 15 seconds"
             variant="landing"
-            gradientFrom="indigo-400"
-            gradientTo="purple-600"
+            gradientFrom="green-400"
+            gradientTo="emerald-600"
           />
         </div>
       </header>

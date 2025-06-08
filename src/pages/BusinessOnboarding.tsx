@@ -1,14 +1,17 @@
 import { googleMapsService } from '@/api/googleMapsService';
+import {
+  AIFeaturesInfo,
+  BusinessInformationForm,
+  Layout,
+  ManualEntryForm,
+  PageContainer,
+  SearchBusinessForm
+} from '@/components';
 import GenerationProgress from '@/components/GenerationProgress';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { useAgenticsGeneration } from '@/hooks/useAgenticsGeneration';
 import { useBusinessSearch } from '@/hooks/useBusinessSearch';
 import { landingPageStorage } from '@/lib/landingPageStorage';
-import { BusinessData, BusinessSearchResult } from '@/types/business';
-import { Bot, Check, MapPin, Sparkles, Star } from 'lucide-react';
+import { BusinessData, BusinessSearchResult as BusinessSearchResultType } from '@/types/business';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -17,7 +20,7 @@ function BusinessOnboarding() {
   const [searchQuery, setSearchQuery] = useState('');
   const [manualEntry, setManualEntry] = useState(false);
   const [businessData, setBusinessData] = useState<Partial<BusinessData>>({});
-  const [selectedBusiness, setSelectedBusiness] = useState<BusinessSearchResult | null>(null);
+  const [selectedBusiness, setSelectedBusiness] = useState<BusinessSearchResultType | null>(null);
   const [showAutocomplete, setShowAutocomplete] = useState(false);
 
   const {
@@ -32,7 +35,6 @@ function BusinessOnboarding() {
     hasAutocompleteSuggestions
   } = useBusinessSearch();
 
-  // Add agentics generation hook
   const {
     generateWithAgents,
     currentStage,
@@ -40,8 +42,6 @@ function BusinessOnboarding() {
     logs,
     isLoading: isGenerating
   } = useAgenticsGeneration();
-
-
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -60,7 +60,6 @@ function BusinessOnboarding() {
     setSearchQuery(suggestion.description);
     setShowAutocomplete(false);
     clearAutocomplete();
-    // Automatically trigger search when autocomplete item is selected
     searchBusiness(suggestion.description);
   };
 
@@ -71,14 +70,12 @@ function BusinessOnboarding() {
   };
 
   const handleInputBlur = () => {
-    // Delay hiding to allow click on autocomplete items
     setTimeout(() => setShowAutocomplete(false), 150);
   };
 
-  const handleSelectBusiness = async (business: BusinessSearchResult) => {
+  const handleSelectBusiness = async (business: BusinessSearchResultType) => {
     setSelectedBusiness(business);
 
-    // Set basic business data immediately
     setBusinessData({
       name: business.name,
       address: business.address,
@@ -87,15 +84,12 @@ function BusinessOnboarding() {
       reviews: business.reviews,
     });
 
-    // Fetch detailed information including photos and social media
+    // Fetch detailed information
     try {
       const placeDetails = await googleMapsService.getPlaceDetails(business.placeId);
 
       if (placeDetails) {
-        // Generate business-type-specific placeholder photos
-
-        // Generate 3-5 placeholder photos with different variations
-        const placeholderCount = Math.floor(Math.random() * 3) + 3; // 3-5 photos
+        const placeholderCount = Math.floor(Math.random() * 3) + 3;
         const photos = Array.from({ length: placeholderCount }, (_, index) => ({
           name: `business_photo_${index}`,
           widthPx: 800,
@@ -104,19 +98,12 @@ function BusinessOnboarding() {
             displayName: 'Unsplash',
             uri: 'https://unsplash.com'
           }],
-          getURI: () => {
-            // Return empty string - images will be handled by the new renderer
-            return '';
-          }
+          getURI: () => ''
         }));
 
-        // Enhanced social media extraction from website and other sources
         const socialMedia: BusinessData['socialMedia'] = {};
-
         if (placeDetails.website) {
           socialMedia.website = placeDetails.website;
-
-          // Try to detect social media patterns in the website URL
           const url = placeDetails.website.toLowerCase();
           if (url.includes('facebook.com')) socialMedia.facebook = placeDetails.website;
           if (url.includes('instagram.com')) socialMedia.instagram = placeDetails.website;
@@ -127,16 +114,12 @@ function BusinessOnboarding() {
           if (url.includes('yelp.com')) socialMedia.yelp = placeDetails.website;
         }
 
-        // Note: Social media suggestions could be added here for future enhancement
-
-        // Extract business hours from Google Places data
         const extractedHours: BusinessData['hours'] = {};
         if (placeDetails.opening_hours?.weekday_text) {
           placeDetails.opening_hours.weekday_text.forEach((dayText, index) => {
             const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'] as const;
             const dayName = days[index];
             if (dayName && dayText) {
-              // Extract just the hours part (remove day name)
               const hoursMatch = dayText.match(/:\s*(.+)/);
               if (hoursMatch && extractedHours) {
                 (extractedHours as any)[dayName] = hoursMatch[1];
@@ -145,7 +128,6 @@ function BusinessOnboarding() {
           });
         }
 
-        // Extract amenities/features from Google Places types
         const amenities: string[] = [];
         if (placeDetails.types) {
           placeDetails.types.forEach(type => {
@@ -178,13 +160,12 @@ function BusinessOnboarding() {
           });
         }
 
-        // Update business data with all extracted information
         setBusinessData(prev => ({
           ...prev,
-          phone: placeDetails.formatted_phone_number || prev.phone,
-          website: placeDetails.website || prev.website,
+          phone: placeDetails.formatted_phone_number || prev.phone || '',
+          website: placeDetails.website || prev.website || '',
           hours: extractedHours,
-          amenities: amenities.length > 0 ? amenities : undefined,
+          amenities: amenities.length > 0 ? amenities : [],
           photos: photos,
           socialMedia: socialMedia,
           coordinates: {
@@ -192,12 +173,9 @@ function BusinessOnboarding() {
             lng: placeDetails.geometry.location.lng
           }
         }));
-
-
       }
     } catch (error) {
       console.error('Failed to fetch place details:', error);
-      // Continue with basic data even if detailed fetch fails
     }
   };
 
@@ -225,8 +203,6 @@ function BusinessOnboarding() {
     try {
       const request = { businessData: businessData as BusinessData };
       const content = await generateWithAgents(request);
-
-      // Save the landing page and navigate directly to it
       const pageId = landingPageStorage.saveLandingPage(businessData as BusinessData, content);
       navigate(`/page/${pageId}`);
     } catch (error) {
@@ -237,312 +213,71 @@ function BusinessOnboarding() {
   const canGenerate = !!businessData.name && (!!selectedBusiness || manualEntry);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl"></div>
-      </div>
-
-      <nav className="relative z-10 flex justify-between items-center p-6 max-w-7xl mx-auto">
-        <div className="text-white font-bold text-xl">
-          Landify
+    <Layout variant="landing" showFooter={false}>
+      <PageContainer maxWidth="2xl" centerContent className="pt-20">
+        {/* Page Title */}
+        <div className="text-center mb-8">
+          <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
+            Tell Us About Your{' '}
+            <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              Business
+            </span>
+          </h1>
+          <p className="text-xl text-center text-gray-300">
+            {isGenerating
+              ? 'Our AI is creating your perfect landing page...'
+              : 'Enter your business info and get a professional landing page in minutes'
+            }
+          </p>
         </div>
-        <div className="flex items-center space-x-8">
-          <button onClick={() => navigate('/')} className="text-gray-300 hover:text-white transition-colors">← Back to Home</button>
-        </div>
-      </nav>
 
-      <div className="relative z-10 flex flex-col items-center justify-center p-8 pt-20">
-        <div className="w-full max-w-2xl">
-          <div className="text-center mb-8">
-            <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-              Tell Us About Your
-              <br />
-              <span className="bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                Business
-              </span>
-            </h1>
-            <p className="text-xl text-center text-gray-300">
-              {isGenerating ?
-                'Our AI is creating your perfect landing page...' :
-                'Enter your business info and get a professional landing page in minutes'
-              }
-            </p>
-          </div>
+        {/* Generation Progress */}
+        <GenerationProgress
+          isGenerating={isGenerating}
+          currentStage={currentStage}
+          progress={progress}
+          logs={logs}
+        />
 
-          {/* Show generation progress when generating */}
-          <GenerationProgress
-            isGenerating={isGenerating}
-            currentStage={currentStage}
-            progress={progress}
-            logs={logs}
-          />
+        {/* Business Information Form */}
+        {!isGenerating && (
+          <BusinessInformationForm>
+            {!manualEntry ? (
+              <SearchBusinessForm
+                searchQuery={searchQuery}
+                showAutocomplete={showAutocomplete}
+                hasAutocompleteSuggestions={hasAutocompleteSuggestions}
+                autocompleteSuggestions={autocompleteSuggestions}
+                isLoading={isLoading}
+                error={error}
+                searchResults={searchResults}
+                selectedBusiness={selectedBusiness}
+                canGenerate={canGenerate}
+                onInputChange={handleInputChange}
+                onInputFocus={handleInputFocus}
+                onInputBlur={handleInputBlur}
+                onSearch={handleSearch}
+                onAutocompleteSelect={handleAutocompleteSelect}
+                onSelectBusiness={handleSelectBusiness}
+                onManualEntry={handleManualEntry}
+                onGenerateLandingPage={handleGenerateLandingPage}
+              />
+            ) : (
+              <ManualEntryForm
+                businessData={businessData}
+                canGenerate={canGenerate}
+                onBackToSearch={handleBackToSearch}
+                onBusinessDataChange={handleBusinessDataChange}
+                onGenerateLandingPage={handleGenerateLandingPage}
+              />
+            )}
+          </BusinessInformationForm>
+        )}
 
-          {/* Business Information Form - Hidden during generation */}
-          {!isGenerating && (
-            <div className="backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-8 shadow-2xl">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl font-semibold text-white">Business Information</h2>
-              </div>
-              <div className="space-y-6">
-                {!manualEntry ? (
-                  <>
-                    <div className="space-y-4">
-                      <Label htmlFor="search" className="text-base font-medium text-white">
-                        Search for your business on Google Maps
-                      </Label>
-                      <div className="relative">
-                        <div className="flex space-x-3">
-                          <div className="flex-1 relative">
-                            <Input
-                              id="search"
-                              placeholder="Enter business name and location..."
-                              value={searchQuery}
-                              onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleInputChange(e.target.value)}
-                              onKeyPress={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && !isLoading && handleSearch()}
-                              onFocus={handleInputFocus}
-                              onBlur={handleInputBlur}
-                              className="w-full bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-white/40 transition-all duration-300"
-                            />
-
-                            {/* Autocomplete Dropdown */}
-                            {showAutocomplete && hasAutocompleteSuggestions && (
-                              <div className="absolute top-full left-0 right-0 mt-1 bg-slate-800/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto">
-                                {autocompleteSuggestions.map((suggestion, index) => (
-                                  <div
-                                    key={suggestion.place_id || index}
-                                    className="px-4 py-3 hover:bg-white/10 cursor-pointer transition-colors duration-200 border-b border-white/10 last:border-b-0"
-                                    onClick={() => handleAutocompleteSelect(suggestion)}
-                                  >
-                                    <div className="flex items-start space-x-3">
-                                      <MapPin className="w-4 h-4 text-gray-400 mt-0.5 flex-shrink-0" />
-                                      <div className="flex-1 min-w-0">
-                                        <p className="text-white text-sm font-medium truncate">
-                                          {suggestion.structured_formatting?.main_text || suggestion.description}
-                                        </p>
-                                        <p className="text-gray-400 text-xs truncate">
-                                          {suggestion.structured_formatting?.secondary_text || ''}
-                                        </p>
-                                      </div>
-                                    </div>
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-                          </div>
-                          <Button
-                            onClick={handleSearch}
-                            disabled={isLoading || !searchQuery.trim()}
-                            className="min-w-[100px] px-4 py-2 text-sm sm:min-w-[120px] sm:px-6 sm:py-3 sm:text-base bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
-                          >
-                            {isLoading ? (
-                              <>
-                                <span className="hidden sm:inline">Searching...</span>
-                                <span className="sm:hidden">...</span>
-                              </>
-                            ) : (
-                              'Search'
-                            )}
-                          </Button>
-                        </div>
-                      </div>
-                      {error && (
-                        <p className="text-sm text-red-400 bg-red-500/10 border border-red-500/20 rounded-lg p-3">
-                          Search failed. Please try again or enter details manually.
-                        </p>
-                      )}
-                    </div>
-
-                    {searchResults && searchResults.length > 0 && (
-                      <div className="space-y-4">
-                        <Label className="text-base font-medium text-white">Search Results</Label>
-                        {searchResults.map((result, index) => {
-                          const isSelected = selectedBusiness?.placeId === result.placeId;
-                          return (
-                            <div
-                              key={index}
-                              className={`p-6 cursor-pointer rounded-xl transition-all duration-300 border ${isSelected
-                                ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 border-blue-400/50 ring-2 ring-blue-400/30'
-                                : 'bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/20'
-                                }`}
-                              onClick={() => handleSelectBusiness(result)}
-                            >
-                              <h3 className="font-semibold text-lg text-white">{result.name}</h3>
-                              <p className="text-sm text-gray-300 mt-1">{result.address}</p>
-                              <div className="flex items-center mt-3 text-sm text-gray-400">
-                                <span className="mr-4 flex items-center">
-                                  <Star className="w-4 h-4 text-yellow-400 mr-1 fill-current" />
-                                  {result.rating}
-                                </span>
-                                <span>({result.reviews} reviews)</span>
-                              </div>
-                              {isSelected && (
-                                <div className="flex items-center mt-3">
-                                  <Check className="w-4 h-4 text-green-400 mr-2" />
-                                  <span className="text-sm text-green-400 font-medium">Selected</span>
-                                </div>
-                              )}
-                            </div>
-                          );
-                        })}
-                      </div>
-                    )}
-
-                    {selectedBusiness && (
-                      <div className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-400/30 rounded-xl p-6">
-                        <h3 className="font-semibold text-green-400 mb-2 flex items-center">
-                          <Check className="w-5 h-5 mr-2" />
-                          Selected Business
-                        </h3>
-                        <p className="text-sm text-green-300 font-medium">{selectedBusiness.name}</p>
-                        <p className="text-xs text-green-400/80">{selectedBusiness.address}</p>
-                      </div>
-                    )}
-
-                    <div className="flex flex-col space-y-4">
-                      {selectedBusiness && (
-                        <Button
-                          onClick={handleGenerateLandingPage}
-                          disabled={!canGenerate || isGenerating}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl text-lg"
-                        >
-                          {isGenerating ? (
-                            <>
-                              <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-2"></div>
-                              Starting AI Generation...
-                            </>
-                          ) : (
-                            <>
-                              <Sparkles className="w-5 h-5 mr-2" />
-                              Generate My Landing Page with AI
-                            </>
-                          )}
-                        </Button>
-                      )}
-                      <Button
-                        variant="outline"
-                        onClick={handleManualEntry}
-                        className="w-full border-white/20 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/40 transition-all duration-300"
-                      >
-                        {searchResults.length > 0 ? "Don't see your business? Enter details manually" : "Can't find your business? Enter details manually"}
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <div className="space-y-6">
-                      <div className="flex items-center justify-between">
-                        <Label className="text-base font-medium text-white">Business Details</Label>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={handleBackToSearch}
-                          className="text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-300"
-                        >
-                          ← Back to Search
-                        </Button>
-                      </div>
-
-                      <div className="space-y-4">
-                        <div>
-                          <Label htmlFor="businessName" className="text-white">Business Name *</Label>
-                          <Input
-                            id="businessName"
-                            placeholder="Your business name"
-                            value={businessData.name || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleBusinessDataChange('name', e.target.value)}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-white/40 transition-all duration-300"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor="businessType" className="text-white">Business Type</Label>
-                          <Input
-                            id="businessType"
-                            placeholder="e.g., Restaurant, Retail Store, Service Provider"
-                            value={businessData.type || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleBusinessDataChange('type', e.target.value)}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-white/40 transition-all duration-300"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor="address" className="text-white">Address</Label>
-                          <Input
-                            id="address"
-                            placeholder="Full business address"
-                            value={businessData.address || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleBusinessDataChange('address', e.target.value)}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-white/40 transition-all duration-300"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor="phone" className="text-white">Phone Number</Label>
-                          <Input
-                            id="phone"
-                            placeholder="Business phone number"
-                            value={businessData.phone || ''}
-                            onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleBusinessDataChange('phone', e.target.value)}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-white/40 transition-all duration-300"
-                          />
-                        </div>
-
-                        <div>
-                          <Label htmlFor="description" className="text-white">Business Description</Label>
-                          <Textarea
-                            id="description"
-                            placeholder="Brief description of your business and services"
-                            value={businessData.description || ''}
-                            onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleBusinessDataChange('description', e.target.value)}
-                            rows={4}
-                            className="bg-white/10 border-white/20 text-white placeholder:text-gray-400 focus:bg-white/20 focus:border-white/40 transition-all duration-300 resize-none"
-                          />
-                        </div>
-
-                        <Button
-                          onClick={handleGenerateLandingPage}
-                          disabled={!canGenerate}
-                          className="w-full bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-medium py-4 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed text-lg"
-                        >
-                          <Sparkles className="w-5 h-5 mr-2" />
-                          Generate My Landing Page with AI
-                        </Button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            </div>
-          )}
-
-          {/* AI Features Info - Only show when not generating */}
-          {!isGenerating && (
-            <div className="mt-8 backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-6 shadow-2xl">
-              <h3 className="text-lg font-semibold text-white mb-4 flex items-center">
-                <Bot className="w-5 h-5 mr-2 text-blue-400" />
-                What happens next?
-              </h3>
-              <div className="space-y-3 text-sm text-gray-300">
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Our AI analyzes your business type and location for unique insights</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-purple-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Creates custom content, colors, and layout specifically for your business</p>
-                </div>
-                <div className="flex items-start space-x-3">
-                  <div className="w-2 h-2 bg-green-400 rounded-full mt-2 flex-shrink-0"></div>
-                  <p>Generates a professional landing page in under 30 seconds</p>
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </div>
+        {/* AI Features Info */}
+        {!isGenerating && <AIFeaturesInfo />}
+      </PageContainer>
+    </Layout>
   );
 }
 

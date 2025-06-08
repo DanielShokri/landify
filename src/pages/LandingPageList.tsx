@@ -51,7 +51,7 @@ function LandingPageList() {
 
   if (loading) {
     return (
-      <Layout variant="landing">
+      <Layout variant="landing" showFooter={false}>
         <div className="flex items-center justify-center min-h-[60vh]">
           <div className="text-center">
             <h2 className="text-2xl font-semibold mb-2 text-white">Loading...</h2>
@@ -63,7 +63,7 @@ function LandingPageList() {
   }
 
   return (
-    <Layout variant="landing">
+    <Layout variant="landing" showFooter={false}>
       <PageContainer
         maxWidth="7xl"
         centerContent

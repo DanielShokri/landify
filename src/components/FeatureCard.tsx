@@ -1,5 +1,4 @@
 import { LucideIcon } from 'lucide-react';
-import React from 'react';
 
 interface FeatureCardProps {
     icon: LucideIcon;
@@ -11,7 +10,7 @@ interface FeatureCardProps {
     className?: string;
 }
 
-const FeatureCard: React.FC<FeatureCardProps> = ({
+const FeatureCard = ({
     icon: Icon,
     title,
     description,
@@ -19,7 +18,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
     gradientFrom = 'blue-400',
     gradientTo = 'blue-600',
     className = ''
-}) => {
+}: FeatureCardProps) => {
     const getCardStyles = () => {
         switch (variant) {
             case 'landing':

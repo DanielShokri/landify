@@ -1,22 +1,22 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 
 interface PageContainerProps {
     children: ReactNode;
-    title?: string;
-    subtitle?: string;
+    title?: ReactNode;
+    subtitle?: ReactNode;
     maxWidth?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '7xl' | 'full';
     className?: string;
     centerContent?: boolean;
 }
 
-const PageContainer: React.FC<PageContainerProps> = ({
+const PageContainer = ({
     children,
     title,
     subtitle,
     maxWidth = 'xl',
     className = '',
     centerContent = false
-}) => {
+}: PageContainerProps) => {
     const getMaxWidthClass = () => {
         switch (maxWidth) {
             case 'sm': return 'max-w-sm';
@@ -44,12 +44,12 @@ const PageContainer: React.FC<PageContainerProps> = ({
             {(title || subtitle) && (
                 <div className="mb-8">
                     {title && (
-                        <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                        <h1 className="text-3xl font-bold text-white mb-2">
                             {title}
                         </h1>
                     )}
                     {subtitle && (
-                        <p className="text-lg text-gray-600">
+                        <p className="text-lg text-gray-300">
                             {subtitle}
                         </p>
                     )}

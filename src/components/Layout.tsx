@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import Footer from './Footer';
 import Header from './Header';
 
@@ -11,14 +11,14 @@ interface LayoutProps {
     containerClassName?: string;
 }
 
-const Layout: React.FC<LayoutProps> = ({
+const Layout = ({
     children,
     variant = 'app',
     showHeader = true,
     showFooter = true,
     className = '',
     containerClassName = ''
-}) => {
+}: LayoutProps) => {
     const getLayoutStyles = () => {
         switch (variant) {
             case 'landing':

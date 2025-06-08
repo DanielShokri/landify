@@ -1,11 +1,10 @@
-import React from 'react';
 
 interface FooterProps {
     variant?: 'landing' | 'app' | 'minimal';
     className?: string;
 }
 
-const Footer: React.FC<FooterProps> = ({ variant = 'app', className = '' }) => {
+const Footer = ({ variant = 'app', className = '' }: FooterProps) => {
     const getFooterStyles = () => {
         switch (variant) {
             case 'landing':

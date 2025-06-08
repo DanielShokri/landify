@@ -12,16 +12,21 @@ import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 function ThemedLandingPageContent({ businessData, content, pageId }: { businessData: BusinessData; content: GeneratedContent; pageId: string }) {
   // If we have HTML content, render it directly
   if (content.htmlDocument) {
+    const isPreview = pageId === 'preview';
+
     return (
       <>
-        <HTMLRenderer htmlContent={content.htmlDocument} />
+        <HTMLRenderer
+          htmlContent={content.htmlDocument}
+          isPreview={isPreview}
+        />
 
         {/* Only show floating button for saved pages (not preview) */}
-        {pageId !== 'preview' && (
+        {!isPreview && (
           <FloatingActionButton
             pageId={pageId}
             businessName={businessData.name}
-            htmlContent={content.htmlDocument}
+            htmlContent={content.htmlDocument} // Always use original HTML for export
           />
         )}
       </>

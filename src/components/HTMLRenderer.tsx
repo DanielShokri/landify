@@ -1,63 +1,12 @@
-import React, { useEffect, useRef } from 'react';
+import React from 'react';
 
 interface HTMLRendererProps {
     htmlContent: string;
     className?: string;
+    isPreview?: boolean;
 }
 
-const HTMLRenderer: React.FC<HTMLRendererProps> = ({ htmlContent, className = '' }) => {
-    const iframeRef = useRef<HTMLIFrameElement>(null);
-
-    useEffect(() => {
-        if (iframeRef.current && htmlContent) {
-            const iframe = iframeRef.current;
-
-            // Write the HTML content to the iframe
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-            if (iframeDoc) {
-                iframeDoc.open();
-                iframeDoc.write(htmlContent);
-                iframeDoc.close();
-
-                // Auto-resize iframe to content height
-                const resizeIframe = () => {
-                    try {
-                        const body = iframeDoc.body;
-                        const html = iframeDoc.documentElement;
-                        if (body && html) {
-                            const height = Math.max(
-                                body.scrollHeight,
-                                body.offsetHeight,
-                                html.clientHeight,
-                                html.scrollHeight,
-                                html.offsetHeight
-                            );
-                            iframe.style.height = `${height}px`;
-                        }
-                    } catch (error) {
-                        console.warn('Could not resize iframe:', error);
-                        // Fallback height
-                        iframe.style.height = '100vh';
-                    }
-                };
-
-                // Initial resize after content loads
-                setTimeout(resizeIframe, 100);
-
-                // Listen for content changes and resize
-                const observer = new MutationObserver(resizeIframe);
-                observer.observe(iframeDoc.body || iframeDoc.documentElement, {
-                    childList: true,
-                    subtree: true,
-                    attributes: true
-                });
-
-                // Cleanup observer on unmount
-                return () => observer.disconnect();
-            }
-        }
-    }, [htmlContent]);
-
+const HTMLRenderer: React.FC<HTMLRendererProps> = ({ htmlContent, className = '', isPreview = false }) => {
     if (!htmlContent) {
         return (
             <div className="flex items-center justify-center h-64 bg-gray-50 rounded-lg">
@@ -69,15 +18,45 @@ const HTMLRenderer: React.FC<HTMLRendererProps> = ({ htmlContent, className = ''
         );
     }
 
+    // Extract the body content from the full HTML document
+    const extractBodyContent = (html: string): string => {
+        const bodyMatch = html.match(/<body[^>]*>([\s\S]*?)<\/body>/i);
+        if (bodyMatch && bodyMatch[1]) {
+            return bodyMatch[1];
+        }
+        return html; // Return full content if no body tag found
+    };
+
+    // Extract head content for inline styles and scripts
+    const extractHeadContent = (html: string): string => {
+        const headMatch = html.match(/<head[^>]*>([\s\S]*?)<\/head>/i);
+        if (headMatch && headMatch[1]) {
+            return headMatch[1];
+        }
+        return '';
+    };
+
+    const bodyContent = extractBodyContent(htmlContent);
+    const headContent = extractHeadContent(htmlContent);
+
+    // Adjust content for preview mode
+    const adjustedContent = isPreview
+        ? bodyContent
+            .replace(/height:\s*100vh/g, 'height: 80vh')
+            .replace(/min-height:\s*100vh/g, 'min-height: 80vh')
+            .replace(/h-screen/g, 'h-[80vh]')
+            .replace(/min-h-screen/g, 'min-h-[80vh]')
+        : bodyContent;
+
     return (
         <div className={`w-full ${className}`}>
-            <iframe
-                ref={iframeRef}
-                className="w-full border-0 rounded-lg shadow-lg"
-                style={{ minHeight: '600px', height: 'auto' }}
-                title="Generated Landing Page"
-                sandbox="allow-scripts allow-same-origin"
-                loading="lazy"
+            {/* Inject head content (styles, scripts) */}
+            <div dangerouslySetInnerHTML={{ __html: headContent }} />
+
+            {/* Render body content directly */}
+            <div
+                className={isPreview ? 'max-h-[80vh] overflow-y-auto' : ''}
+                dangerouslySetInnerHTML={{ __html: adjustedContent }}
             />
         </div>
     );

@@ -2,6 +2,7 @@ import type { ProgressEvent } from '@/types/agents';
 import type { ContentGenerationRequest, GeneratedContent } from '@/types/content';
 import OpenAI from 'openai';
 import { Observable } from 'rxjs';
+import { proxyService, shouldUseProxy } from './proxyService';
 
 /**
  * Fast Multi-Agent Content Generation Service
@@ -11,11 +12,14 @@ import { Observable } from 'rxjs';
  * - Streamlined prompts
  * - Single-pass generation
  * - Template-based HTML
+ * - Secure API proxy in production
  */
 class FastAgenticsService {
   private openai: OpenAI;
+  private useProxy: boolean;
 
   constructor() {
+    this.useProxy = shouldUseProxy();
     this.openai = new OpenAI({
       apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
       dangerouslyAllowBrowser: true
@@ -151,6 +155,14 @@ class FastAgenticsService {
    * Fast business analysis using streamlined prompts
    */
   private async fastBusinessAnalysis(businessData: any): Promise<any> {
+    if (this.useProxy) {
+      const response = await proxyService.generateContent({
+        businessData,
+        analysisType: 'business_analysis'
+      });
+      return this.parseJSONResponse(response.choices[0]?.message?.content || '{}');
+    }
+
     const prompt = `Business: ${businessData.name} (${businessData.type})
 Location: ${businessData.address}
 Description: ${businessData.description || 'N/A'}
@@ -179,6 +191,14 @@ Analyze the target market and competitive edge. Return JSON:
    * Fast content generation using streamlined prompts
    */
   private async fastContentGeneration(businessData: any): Promise<any> {
+    if (this.useProxy) {
+      const response = await proxyService.generateContent({
+        businessData,
+        analysisType: 'content_generation'
+      });
+      return this.parseJSONResponse(response.choices[0]?.message?.content || '{}');
+    }
+
     const prompt = `Business: ${businessData.name} (${businessData.type})
 Location: ${businessData.address}
 Description: ${businessData.description || 'N/A'}
@@ -211,6 +231,22 @@ Create compelling content. Return JSON:
    * Fast HTML generation using template-based approach
    */
   private async fastHTMLGeneration(businessData: any, analysis: any, content: any): Promise<string> {
+    if (this.useProxy) {
+      const response = await proxyService.generateContent({
+        businessData,
+        analysisType: 'html_generation',
+        headline: content.headline
+      });
+      const html = response.choices[0]?.message?.content || '';
+      
+      // Ensure we have valid HTML
+      if (!html.toLowerCase().includes('<html')) {
+        return this.generateFallbackHTML(businessData, content);
+      }
+      
+      return html;
+    }
+
     const prompt = `Create a professional landing page HTML for ${businessData.name}.
 
 Business: ${businessData.name} (${businessData.type})

@@ -1,5 +1,6 @@
 import { Loader } from '@googlemaps/js-api-loader';
 import type { BusinessSearchResult, GoogleMapsPlace, SocialMediaLinks } from '../types/business';
+import { shouldUseProxy } from './proxyService';
 
 class GoogleMapsService {
   private apiKey: string;
@@ -7,6 +8,7 @@ class GoogleMapsService {
   private placesService: google.maps.places.PlacesService | null = null;
   private autocompleteService: google.maps.places.AutocompleteService | null = null;
   private isInitialized = false;
+  private useProxy: boolean;
 
   /**
    * Helper method to check if a place is currently open
@@ -48,6 +50,7 @@ class GoogleMapsService {
 
 
   constructor() {
+    this.useProxy = shouldUseProxy();
     this.apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
     this.loader = new Loader({
       apiKey: this.apiKey,

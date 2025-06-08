@@ -1,5 +1,6 @@
-import { AgentContext, AgentType, BaseEvent } from '@/types/agents';
-import { GeneratedContent } from '@/types/content';
+import type { AgentContext, BaseEvent } from '@/types/agents';
+import { AgentType } from '@/types/agents';
+import type { GeneratedContent } from '@/types/content';
 import { openai } from '@/utils/openaiClient';
 import { Observable } from 'rxjs';
 import { BaseAgent } from './BaseAgent';

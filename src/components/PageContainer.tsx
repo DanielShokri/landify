@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 interface PageContainerProps {
     children: ReactNode;
@@ -10,27 +10,27 @@ interface PageContainerProps {
 }
 
 const PageContainer = ({
-    children,
-    title,
-    subtitle,
-    maxWidth = 'xl',
-    className = '',
-    centerContent = false
+  children,
+  title,
+  subtitle,
+  maxWidth = 'xl',
+  className = '',
+  centerContent = false
 }: PageContainerProps) => {
-    const getMaxWidthClass = () => {
-        switch (maxWidth) {
-            case 'sm': return 'max-w-sm';
-            case 'md': return 'max-w-md';
-            case 'lg': return 'max-w-lg';
-            case 'xl': return 'max-w-xl';
-            case '2xl': return 'max-w-2xl';
-            case '7xl': return 'max-w-7xl';
-            case 'full': return 'max-w-full';
-            default: return 'max-w-xl';
-        }
-    };
+  const getMaxWidthClass = () => {
+    switch (maxWidth) {
+    case 'sm': return 'max-w-sm';
+    case 'md': return 'max-w-md';
+    case 'lg': return 'max-w-lg';
+    case 'xl': return 'max-w-xl';
+    case '2xl': return 'max-w-2xl';
+    case '7xl': return 'max-w-7xl';
+    case 'full': return 'max-w-full';
+    default: return 'max-w-xl';
+    }
+  };
 
-    const containerClasses = `
+  const containerClasses = `
     ${getMaxWidthClass()} 
     mx-auto 
     px-4 
@@ -39,25 +39,25 @@ const PageContainer = ({
     ${className}
   `.trim();
 
-    return (
-        <div className={containerClasses}>
-            {(title || subtitle) && (
-                <div className="mb-8">
-                    {title && (
-                        <h1 className="text-3xl font-bold text-white mb-2">
-                            {title}
-                        </h1>
-                    )}
-                    {subtitle && (
-                        <p className="text-lg text-gray-300">
-                            {subtitle}
-                        </p>
-                    )}
-                </div>
-            )}
-            {children}
+  return (
+    <div className={containerClasses}>
+      {(title || subtitle) && (
+        <div className="mb-8">
+          {title && (
+            <h1 className="text-3xl font-bold text-white mb-2">
+              {title}
+            </h1>
+          )}
+          {subtitle && (
+            <p className="text-lg text-gray-300">
+              {subtitle}
+            </p>
+          )}
         </div>
-    );
+      )}
+      {children}
+    </div>
+  );
 };
 
 export default PageContainer; 

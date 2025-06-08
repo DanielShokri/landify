@@ -1,5 +1,6 @@
-import { AgentContext, EventType, ProgressEvent } from '@/types/agents';
-import { ContentGenerationRequest, GeneratedContent } from '@/types/content';
+import type { AgentContext, ProgressEvent } from '@/types/agents';
+import { EventType } from '@/types/agents';
+import type { ContentGenerationRequest, GeneratedContent } from '@/types/content';
 import { Observable } from 'rxjs';
 import { BusinessAnalysisAgent } from './agents/BusinessAnalysisAgent';
 import { ContentStrategyAgent } from './agents/ContentStrategyAgent';
@@ -207,7 +208,7 @@ class AgenticsService {
             observer.next({
               stage: outputKey,
               progress: completionProgress - 5,
-              message: `💭 Processing...`,
+              message: '💭 Processing...',
               agentEvent: event
             });
           } else if (event.type === EventType.STATE_DELTA && event.delta) {

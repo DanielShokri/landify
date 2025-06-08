@@ -115,7 +115,7 @@ export interface LandingPageTheme {
   };
 }
 
-import { BusinessData } from './business';
+import type { BusinessData } from './business';
 
 export interface TrustSignals {
   rating: number;

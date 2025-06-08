@@ -1,4 +1,4 @@
-import { AILayoutInstructions } from '@/types/content';
+import type { AILayoutInstructions } from '@/types/content';
 import { z } from 'zod';
 
 // Section variant schemas

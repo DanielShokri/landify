@@ -169,15 +169,17 @@ class GoogleMapsService {
               types: place.types || [],
               photos: [],
               // Handle opening hours with modern approach  
-              opening_hours: place.opening_hours ? {
-                periods: place.opening_hours.periods,
-                weekday_text: place.opening_hours.weekday_text,
-                // Note: The modern isOpen() method is available on the Google Maps PlaceResult
-                // This replaces the deprecated open_now property
-                isOpen: place.opening_hours.isOpen
-              } : undefined,
+              ...(place.opening_hours && {
+                opening_hours: {
+                  ...(place.opening_hours.periods && { periods: place.opening_hours.periods }),
+                  ...(place.opening_hours.weekday_text && { weekday_text: place.opening_hours.weekday_text }),
+                  // Note: The modern isOpen() method is available on the Google Maps PlaceResult
+                  // This replaces the deprecated open_now property
+                  ...(place.opening_hours.isOpen && { isOpen: place.opening_hours.isOpen })
+                }
+              }),
               // Use modern utc_offset_minutes instead of deprecated utc_offset
-              utc_offset_minutes: place.utc_offset_minutes
+              ...(place.utc_offset_minutes !== undefined && { utc_offset_minutes: place.utc_offset_minutes })
             };
             resolve(result);
           } else {
@@ -237,11 +239,16 @@ class GoogleMapsService {
       return new Promise((resolve, reject) => {
         geocoder.geocode({ address }, (results: google.maps.GeocoderResult[] | null, status: google.maps.GeocoderStatus) => {
           if (status === google.maps.GeocoderStatus.OK && results && results.length > 0) {
-            const location = results[0].geometry.location;
-            resolve({
-              lat: location.lat(),
-              lng: location.lng()
-            });
+            const location = results[0]?.geometry?.location;
+            if (location) {
+              resolve({
+                lat: location.lat(),
+                lng: location.lng()
+              });
+            } else {
+              console.error('Geocoding Error: No location found');
+              reject(new Error('Geocoding failed: No location found'));
+            }
           } else {
             console.error('Geocoding Error:', status);
             reject(new Error(`Geocoding failed: ${status}`));

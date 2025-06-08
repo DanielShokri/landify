@@ -8,10 +8,6 @@
 - OpenAI API key
 - Google Maps API key
 
-### 2. One-Click Deployment
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/YOUR_USERNAME/landify)
-
 ### 3. Manual Setup
 
 #### Step 1: Install Vercel CLI

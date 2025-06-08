@@ -8,9 +8,17 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "lint:fix": "eslint . --ext ts,tsx --fix"
+    "lint:fix": "eslint . --ext ts,tsx --fix",
+    "type-check": "tsc --noEmit",
+    "type-check:strict": "tsc --noEmit --strict",
+    "validate": "npm run type-check && npm run lint",
+    "validate:strict": "npm run type-check:strict && npm run lint && npm run build",
+    "pre-commit": "npm run validate",
+    "check-all": "npm run validate:strict",
+    "fix-errors": "node scripts/fix-common-errors.js"
   },
   "dependencies": {
+    "@ag-ui/client": "^0.0.28",
     "@googlemaps/js-api-loader": "github:googlemaps/js-api-loader",
     "@radix-ui/react-accordion": "^1.1.2",
     "@radix-ui/react-alert-dialog": "^1.0.5",
@@ -48,8 +56,10 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.8.1",
+    "rxjs": "^7.8.2",
     "tailwind-merge": "^2.2.0",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "zod": "^3.25.56"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
@@ -60,6 +70,8 @@
     "@vitejs/plugin-react": "^4.2.1",
     "autoprefixer": "^10.4.16",
     "eslint": "^8.55.0",
+    "eslint-import-resolver-typescript": "^4.4.3",
+    "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.5",
     "postcss": "^8.4.32",

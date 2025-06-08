@@ -2,9 +2,9 @@ export interface BusinessData {
   id?: string;
   name: string;
   type: string;
-  description: string;
+  description?: string;
   address: string;
-  phone: string;
+  phone?: string;
   email?: string;
   website?: string;
   rating?: number;

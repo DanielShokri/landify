@@ -19,6 +19,10 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
 
     /* Path mapping */
     "baseUrl": ".",

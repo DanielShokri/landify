@@ -1,9 +1,9 @@
-import React from 'react';
+import * as React from 'react';
 
 interface HTMLRendererProps {
-    htmlContent: string;
-    className?: string;
-    isPreview?: boolean;
+  htmlContent: string;
+  className?: string;
+  isPreview?: boolean;
 }
 
 const HTMLRenderer: React.FC<HTMLRendererProps> = ({ htmlContent, className = '', isPreview = false }) => {

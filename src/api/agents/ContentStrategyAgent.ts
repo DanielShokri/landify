@@ -53,6 +53,7 @@ export class ContentStrategyAgent extends BaseAgent {
           role: 'system',
           content: `
 You are a content strategist. Craft a compelling content strategy step by step, referencing business analysis data.
+IMPORTANT: Respond ONLY in English language. All content must be in English.
 Think step by step, outline your reasoning, then output JSON:
 {
   "headline": "...",
@@ -77,7 +78,7 @@ Think step by step, outline your reasoning, then output JSON:
     const critique = await this.openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: 'You are an expert reviewer.' },
+        { role: 'system', content: 'You are an expert reviewer. Respond ONLY in English language.' },
         { role: 'user', content: `Review and refine this content strategy JSON. Remove anything generic and enhance business/location specificity.\nJSON: ${JSON.stringify(resp.output, null, 2)}` }
       ],
       temperature: 0.6,

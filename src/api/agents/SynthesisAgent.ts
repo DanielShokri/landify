@@ -47,7 +47,8 @@ export class SynthesisAgent extends BaseAgent {
 
     // Build a detailed, creative prompt for HTML generation
     const htmlPrompt = `
-You are a creative web designer AI. Generate a fully unique, business-specific landing page HTML for the following business. 
+You are a creative web designer AI. Generate a fully unique, business-specific landing page HTML for the following business.
+IMPORTANT: All content must be in English language only. 
 - Use TailwindCSS via CDN for styling.
 - Do NOT use any boilerplate or generic templates; every page must be visually and structurally unique.
 - Use semantic HTML5, creative layouts, and vibrant color schemes inspired by the business type.
@@ -64,7 +65,7 @@ Business Analysis: ${JSON.stringify(businessAnalysis, null, 2)}
     const htmlResponse = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: 'You are a creative web designer AI.' },
+        { role: 'system', content: 'You are a creative web designer AI. Respond ONLY in English language.' },
         { role: 'user', content: htmlPrompt }
       ],
       temperature: 0.95,
@@ -79,6 +80,7 @@ Business Analysis: ${JSON.stringify(businessAnalysis, null, 2)}
     // Ask the AI to generate both theme and layout in a single call
     const themeAndLayoutPrompt = `
 You are a creative web designer AI. Based on the following business data, content strategy, and business analysis, generate:
+IMPORTANT: All content must be in English language only.
 1. A unique, business-appropriate theme object (as 'theme') matching this TypeScript interface:
 
 interface LandingPageTheme {
@@ -167,7 +169,7 @@ Business Analysis: ${JSON.stringify(businessAnalysis, null, 2)}
     const themeAndLayoutResponse = await openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: 'You are a creative web designer AI.' },
+        { role: 'system', content: 'You are a creative web designer AI. Respond ONLY in English language.' },
         { role: 'user', content: themeAndLayoutPrompt }
       ],
       temperature: 0.85,

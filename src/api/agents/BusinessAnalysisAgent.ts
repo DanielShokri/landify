@@ -51,6 +51,7 @@ export class BusinessAnalysisAgent extends BaseAgent {
           role: 'system',
           content: `
 You are a business analyst. Analyze the business context, target market, competitors, and unique positioning.
+IMPORTANT: Respond ONLY in English language. All content must be in English.
 Think step by step and at each step note your reasoning before summarizing.
 Respond in JSON according to this schema exactly:
 {
@@ -80,7 +81,7 @@ Respond in JSON according to this schema exactly:
     const critique = await this.openai.chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
-        { role: 'system', content: 'You are an expert reviewer.' },
+        { role: 'system', content: 'You are an expert reviewer. Respond ONLY in English language.' },
         { role: 'user', content: `Review this JSON and refine any generic parts to be more specific to this business/location.\nJSON: ${JSON.stringify(resp.output, null,2)}` }
       ],
       temperature: 0.5,

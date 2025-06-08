@@ -8,8 +8,8 @@ import {
   SearchBusinessForm
 } from '@/components';
 import GenerationProgress from '@/components/GenerationProgress';
-import { useAgenticsGeneration } from '@/hooks/useAgenticsGeneration';
 import { useBusinessSearch } from '@/hooks/useBusinessSearch';
+import { useFastGeneration } from '@/hooks/useFastGeneration';
 import { landingPageStorage } from '@/lib/landingPageStorage';
 import type { BusinessData, BusinessSearchResult as BusinessSearchResultType } from '@/types/business';
 import { useState } from 'react';
@@ -41,7 +41,7 @@ function BusinessOnboarding() {
     progress,
     logs,
     isLoading: isGenerating
-  } = useAgenticsGeneration();
+  } = useFastGeneration();
 
   const handleSearch = async () => {
     if (searchQuery.trim()) {
@@ -119,30 +119,30 @@ function BusinessOnboarding() {
         if (placeDetails.types) {
           placeDetails.types.forEach(type => {
             switch (type) {
-            case 'meal_delivery':
-              amenities.push('Delivery Available');
-              break;
-            case 'meal_takeaway':
-              amenities.push('Takeout Available');
-              break;
-            case 'wheelchair_accessible_entrance':
-              amenities.push('Wheelchair Accessible');
-              break;
-            case 'accepts_credit_cards':
-              amenities.push('Credit Cards Accepted');
-              break;
-            case 'parking':
-              amenities.push('Parking Available');
-              break;
-            case 'wifi':
-              amenities.push('Free WiFi');
-              break;
-            case 'outdoor_seating':
-              amenities.push('Outdoor Seating');
-              break;
-            case 'reservations':
-              amenities.push('Reservations Accepted');
-              break;
+              case 'meal_delivery':
+                amenities.push('Delivery Available');
+                break;
+              case 'meal_takeaway':
+                amenities.push('Takeout Available');
+                break;
+              case 'wheelchair_accessible_entrance':
+                amenities.push('Wheelchair Accessible');
+                break;
+              case 'accepts_credit_cards':
+                amenities.push('Credit Cards Accepted');
+                break;
+              case 'parking':
+                amenities.push('Parking Available');
+                break;
+              case 'wifi':
+                amenities.push('Free WiFi');
+                break;
+              case 'outdoor_seating':
+                amenities.push('Outdoor Seating');
+                break;
+              case 'reservations':
+                amenities.push('Reservations Accepted');
+                break;
             }
           });
         }
@@ -211,8 +211,8 @@ function BusinessOnboarding() {
           </h1>
           <p className="text-xl text-center text-gray-300">
             {isGenerating
-              ? 'Our AI is creating your perfect landing page...'
-              : 'Enter your business info and get a professional landing page in minutes'
+              ? 'Our fast AI is creating your perfect landing page in seconds...'
+              : 'Enter your business info and get a professional landing page in under 15 seconds'
             }
           </p>
         </div>

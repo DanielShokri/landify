@@ -101,19 +101,6 @@ function BusinessOnboarding() {
           getURI: () => ''
         }));
 
-        const socialMedia: BusinessData['socialMedia'] = {};
-        if (placeDetails.website) {
-          socialMedia.website = placeDetails.website;
-          const url = placeDetails.website.toLowerCase();
-          if (url.includes('facebook.com')) socialMedia.facebook = placeDetails.website;
-          if (url.includes('instagram.com')) socialMedia.instagram = placeDetails.website;
-          if (url.includes('twitter.com') || url.includes('x.com')) socialMedia.twitter = placeDetails.website;
-          if (url.includes('linkedin.com')) socialMedia.linkedin = placeDetails.website;
-          if (url.includes('youtube.com')) socialMedia.youtube = placeDetails.website;
-          if (url.includes('tiktok.com')) socialMedia.tiktok = placeDetails.website;
-          if (url.includes('yelp.com')) socialMedia.yelp = placeDetails.website;
-        }
-
         const extractedHours: BusinessData['hours'] = {};
         if (placeDetails.opening_hours?.weekday_text) {
           placeDetails.opening_hours.weekday_text.forEach((dayText, index) => {
@@ -167,7 +154,6 @@ function BusinessOnboarding() {
           hours: extractedHours,
           amenities: amenities.length > 0 ? amenities : [],
           photos: photos,
-          socialMedia: socialMedia,
           coordinates: {
             lat: placeDetails.geometry.location.lat,
             lng: placeDetails.geometry.location.lng

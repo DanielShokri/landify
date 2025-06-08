@@ -1,4 +1,6 @@
 import { MapPin } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 
 // Use the Google Maps AutocompletePrediction type directly
 type AutocompleteSuggestion = google.maps.places.AutocompletePrediction;
@@ -7,15 +9,57 @@ interface AutocompleteDropdownProps {
     suggestions: AutocompleteSuggestion[];
     onSelect: (suggestion: AutocompleteSuggestion) => void;
     className?: string;
+    inputRef?: React.RefObject<HTMLInputElement>;
 }
 
 const AutocompleteDropdown = ({
     suggestions,
     onSelect,
-    className = ''
+    className = '',
+    inputRef
 }: AutocompleteDropdownProps) => {
-    return (
-        <div className={`absolute top-full left-0 right-0 mt-1 bg-slate-800/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-xl z-50 max-h-60 overflow-y-auto ${className}`}>
+    const [position, setPosition] = useState({ top: 0, left: 0, width: 0 });
+    const dropdownRef = useRef<HTMLDivElement>(null);
+
+    const updatePosition = () => {
+        if (inputRef?.current) {
+            const inputRect = inputRef.current.getBoundingClientRect();
+            setPosition({
+                top: inputRect.bottom + window.scrollY + 4,
+                left: inputRect.left + window.scrollX,
+                width: inputRect.width
+            });
+        }
+    };
+
+    useEffect(() => {
+        updatePosition();
+    }, [inputRef, suggestions]);
+
+    useEffect(() => {
+        const handleScroll = () => updatePosition();
+        const handleResize = () => updatePosition();
+
+        window.addEventListener('scroll', handleScroll, true);
+        window.addEventListener('resize', handleResize);
+
+        return () => {
+            window.removeEventListener('scroll', handleScroll, true);
+            window.removeEventListener('resize', handleResize);
+        };
+    }, [inputRef]);
+
+    const dropdownContent = (
+        <div
+            ref={dropdownRef}
+            className={`autocomplete-dropdown fixed bg-slate-800/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-xl z-[9999] h-60 overflow-y-auto ${className}`}
+            style={{
+                top: position.top,
+                left: position.left,
+                width: position.width,
+                minWidth: '200px'
+            }}
+        >
             {suggestions.map((suggestion, index) => (
                 <div
                     key={suggestion.place_id || index}
@@ -37,6 +81,8 @@ const AutocompleteDropdown = ({
             ))}
         </div>
     );
+
+    return createPortal(dropdownContent, document.body);
 };
 
 export default AutocompleteDropdown; 

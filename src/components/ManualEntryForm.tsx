@@ -41,6 +41,7 @@ const ManualEntryForm = ({
                     onChange={(value) => onBusinessDataChange('name', value)}
                     placeholder="Your business name"
                     required
+                    className="text-left"
                 />
 
                 <FormField
@@ -48,6 +49,8 @@ const ManualEntryForm = ({
                     id="businessType"
                     value={businessData.type || ''}
                     onChange={(value) => onBusinessDataChange('type', value)}
+                    className="text-left"
+                    required
                     placeholder="e.g., Restaurant, Retail Store, Service Provider"
                 />
 
@@ -57,6 +60,8 @@ const ManualEntryForm = ({
                     value={businessData.address || ''}
                     onChange={(value) => onBusinessDataChange('address', value)}
                     placeholder="Full business address"
+                    className="text-left"
+                    required
                 />
 
                 <FormField
@@ -65,6 +70,8 @@ const ManualEntryForm = ({
                     value={businessData.phone || ''}
                     onChange={(value) => onBusinessDataChange('phone', value)}
                     placeholder="Business phone number"
+                    className="text-left"
+                    required
                 />
 
                 <FormField
@@ -74,6 +81,8 @@ const ManualEntryForm = ({
                     value={businessData.description || ''}
                     onChange={(value) => onBusinessDataChange('description', value)}
                     placeholder="Brief description of your business and services"
+                    className="text-left"
+                    required
                 />
 
                 <Button

@@ -76,14 +76,16 @@ const SearchBusinessForm = ({
             {searchResults && searchResults.length > 0 && (
                 <div className="space-y-4">
                     <Label className="text-base font-medium text-white">Search Results</Label>
-                    {searchResults.map((result: BusinessSearchResultType, index: number) => (
-                        <BusinessSearchResult
-                            key={index}
-                            business={result}
-                            isSelected={selectedBusiness?.placeId === result.placeId}
-                            onClick={() => onSelectBusiness(result)}
-                        />
-                    ))}
+                    <div className="search-results-container h-80 overflow-y-auto space-y-3 pr-2">
+                        {searchResults.map((result: BusinessSearchResultType, index: number) => (
+                            <BusinessSearchResult
+                                key={index}
+                                business={result}
+                                isSelected={selectedBusiness?.placeId === result.placeId}
+                                onClick={() => onSelectBusiness(result)}
+                            />
+                        ))}
+                    </div>
                 </div>
             )}
 
@@ -103,12 +105,13 @@ const SearchBusinessForm = ({
                         Generate My Landing Page with AI
                     </Button>
                 )}
+                <div className="text-left text-gray-400 text-sm">Can't find your business? </div>
                 <Button
                     variant="outline"
                     onClick={onManualEntry}
-                    className="w-full border-white/20 text-gray-300 hover:bg-white/10 hover:text-white hover:border-white/40 transition-all duration-300"
+                    className="w-full border-white/20 text-black hover:bg-white/10 hover:text-white hover:border-white/40 transition-all duration-300"
                 >
-                    {searchResults.length > 0 ? "Don't see your business? Enter details manually" : "Can't find your business? Enter details manually"}
+                    Enter details manually
                 </Button>
             </div>
         </>

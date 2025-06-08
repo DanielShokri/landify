@@ -1,5 +1,6 @@
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { useRef } from 'react';
 import AutocompleteDropdown from './AutocompleteDropdown';
 
 // Use the Google Maps AutocompletePrediction type directly
@@ -36,6 +37,8 @@ const SearchInput = ({
     onSearch,
     onAutocompleteSelect,
 }: SearchInputProps) => {
+    const inputRef = useRef<HTMLInputElement>(null);
+
     const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
         if (e.key === 'Enter' && !isLoading) {
             onSearch();
@@ -47,6 +50,7 @@ const SearchInput = ({
             <div className="flex space-x-3">
                 <div className="flex-1 relative">
                     <Input
+                        ref={inputRef}
                         placeholder={placeholder}
                         value={value}
                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onInputChange(e.target.value)}
@@ -61,6 +65,7 @@ const SearchInput = ({
                         <AutocompleteDropdown
                             suggestions={autocompleteSuggestions}
                             onSelect={onAutocompleteSelect}
+                            inputRef={inputRef}
                         />
                     )}
                 </div>

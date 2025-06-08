@@ -1,5 +1,5 @@
 import { Loader } from '@googlemaps/js-api-loader';
-import { GoogleMapsPlace, BusinessSearchResult, PlacePhoto, SocialMediaLinks } from '../types/business';
+import { BusinessSearchResult, GoogleMapsPlace, SocialMediaLinks } from '../types/business';
 
 class GoogleMapsService {
   private apiKey: string;
@@ -12,38 +12,7 @@ class GoogleMapsService {
    * Helper method to check if a place is currently open
    * Replaces the deprecated open_now field functionality
    */
-  private isPlaceOpenNow(openingHours?: google.maps.places.PlaceOpeningHours): boolean {
-    if (!openingHours) return false;
-    
-    // Use the modern isOpen() method if available
-    if (openingHours.isOpen) {
-      return openingHours.isOpen() || false;
-    }
-    
-    // Fallback: basic check using periods (not as accurate but better than nothing)
-    if (openingHours.periods && openingHours.periods.length > 0) {
-      const now = new Date();
-      const currentDay = now.getDay(); // 0 = Sunday, 1 = Monday, etc.
-      const currentTime = now.getHours() * 100 + now.getMinutes(); // HHMM format
-      
-      const todayPeriods = openingHours.periods.filter(period => 
-        period.open && period.open.day === currentDay
-      );
-      
-      for (const period of todayPeriods) {
-        if (period.open && period.close) {
-          const openTime = parseInt(period.open.time || '0000');
-          const closeTime = parseInt(period.close.time || '2359');
-          
-          if (currentTime >= openTime && currentTime <= closeTime) {
-            return true;
-          }
-        }
-      }
-    }
-    
-    return false;
-  }
+
 
 
 
@@ -76,23 +45,7 @@ class GoogleMapsService {
     return socialMedia;
   }
 
-  /**
-   * Helper to extract display name from HTML attribution
-   */
-  private extractNameFromAttribution(attribution: string): string {
-    // Simple regex to extract name from HTML attribution
-    const match = attribution.match(/>([^<]+)</);
-    return match ? match[1] : 'Unknown';
-  }
 
-  /**
-   * Helper to extract URI from HTML attribution  
-   */
-  private extractUriFromAttribution(attribution: string): string | undefined {
-    // Simple regex to extract href from HTML attribution
-    const match = attribution.match(/href="([^"]+)"/);
-    return match ? match[1] : undefined;
-  }
 
   constructor() {
     this.apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
@@ -196,7 +149,7 @@ class GoogleMapsService {
         this.placesService!.getDetails(request, async (place: google.maps.places.PlaceResult | null, status: google.maps.places.PlacesServiceStatus) => {
           if (status === google.maps.places.PlacesServiceStatus.OK && place) {
             // Extract social media
-            const socialMedia = await this.extractSocialMediaLinks(place);
+            await this.extractSocialMediaLinks(place);
 
             const result: GoogleMapsPlace = {
               place_id: place.place_id || '',

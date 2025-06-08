@@ -5,10 +5,20 @@ module.exports = {
     'eslint:recommended',
     '@typescript-eslint/recommended',
     'plugin:react-hooks/recommended',
+    'plugin:import/recommended',
+    'plugin:import/typescript',
   ],
   ignorePatterns: ['dist', '.eslintrc.cjs'],
   parser: '@typescript-eslint/parser',
-  plugins: ['react-refresh'],
+  plugins: ['react-refresh', 'import'],
+  settings: {
+    'import/resolver': {
+      typescript: {
+        alwaysTryTypes: true,
+        project: './tsconfig.json',
+      },
+    },
+  },
   rules: {
     'react-refresh/only-export-components': [
       'warn',
@@ -28,5 +38,17 @@ module.exports = {
     'array-bracket-spacing': ['error', 'never'],
     'max-len': ['warn', { code: 100 }],
     'indent': ['error', 2],
+    // Import/Export rules
+    'import/no-unresolved': 'error',
+    'import/named': 'error',
+    'import/default': 'error',
+    'import/no-absolute-path': 'error',
+    'import/no-self-import': 'error',
+    'import/no-cycle': 'warn',
+    'import/no-duplicates': 'error',
+    // TypeScript specific
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/consistent-type-imports': 'error',
+    '@typescript-eslint/no-import-type-side-effects': 'error',
   },
 }; 

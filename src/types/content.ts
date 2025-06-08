@@ -1,4 +1,6 @@
 export interface GeneratedContent {
+  htmlDocument?: string; // Full HTML document with TailwindCSS
+  layout?: AILayoutInstructions;
   headline: string;
   subheadline: string;
   valuePropositions: string[];
@@ -65,8 +67,6 @@ export interface Feature {
 
 export interface ContentGenerationRequest {
   businessData: BusinessData;
-  tone?: 'professional' | 'friendly' | 'casual' | 'luxury';
-  style?: 'modern' | 'classic' | 'minimalist' | 'bold';
   targetAudience?: string;
   industry?: string;
   specialRequests?: string;
@@ -136,4 +136,63 @@ export interface BusinessHoursInfo {
   schedule: string;
   specialHours: string;
   availability: string;
+}
+
+export interface AILayoutInstructions {
+  type: 'hero-centric' | 'service-focused' | 'story-driven' | 'contact-first' | 'visual-portfolio' | 'minimal-modern' | 'full-immersive';
+  pageFlow: 'vertical-scroll' | 'sectioned-blocks' | 'card-based' | 'magazine-style';
+  sections: AILayoutSection[];
+  globalStyle: {
+    containerWidth: 'max-w-7xl' | 'max-w-6xl' | 'max-w-5xl' | 'max-w-4xl' | 'full-width';
+    sectionSpacing: 'space-y-8' | 'space-y-12' | 'space-y-16' | 'space-y-20';
+    borderRadius: 'rounded-none' | 'rounded-lg' | 'rounded-xl' | 'rounded-2xl';
+    shadowIntensity: 'shadow-none' | 'shadow-md' | 'shadow-lg' | 'shadow-xl';
+    animationStyle: 'none' | 'subtle' | 'moderate' | 'dynamic';
+  };
+  responsiveBreakpoints: {
+    mobile: 'block' | 'hidden';
+    tablet: 'md:block' | 'md:hidden';
+    desktop: 'lg:block' | 'lg:hidden';
+  };
+}
+
+export interface AILayoutSection {
+  id: 'hero' | 'services' | 'about' | 'contact' | 'trust' | 'menu' | 'portfolio' | 'features' | 'hours' | string;
+  order: number;
+  variant: string;
+  [key: string]: any; // Allow additional properties for specific section types
+}
+
+export interface HeroLayoutSection extends AILayoutSection {
+  id: 'hero';
+  variant: 'full-screen' | 'split-content' | 'minimal-centered' | 'image-overlay' | 'video-background' | 'compact-banner';
+  contentAlignment: 'center' | 'left' | 'right';
+  backgroundType: 'solid' | 'gradient' | 'image' | 'video';
+  heightClass: 'h-screen' | 'h-96' | 'h-80' | 'h-64';
+  paddingClass: 'p-4' | 'p-8' | 'p-12' | 'p-16';
+  textAlignment: 'text-center' | 'text-left' | 'text-right';
+}
+
+export interface ServicesLayoutSection extends AILayoutSection {
+  id: 'services';
+  variant: 'card-grid' | 'list-view' | 'carousel' | 'masonry' | 'table-view' | 'icon-blocks';
+  columns: 1 | 2 | 3 | 4;
+  spacing: 'gap-4' | 'gap-6' | 'gap-8' | 'gap-12';
+  cardStyle: 'elevated' | 'bordered' | 'minimal' | 'glassmorphism';
+  layoutPattern: 'equal-width' | 'featured-first' | 'alternating' | 'pyramid';
+}
+
+export interface AboutLayoutSection extends AILayoutSection {
+  id: 'about';
+  variant: 'text-image' | 'image-text' | 'centered-text' | 'timeline' | 'stats-focused';
+  imagePosition: 'left' | 'right' | 'top' | 'background';
+  textColumns: 1 | 2;
+  emphasis: 'text' | 'visual' | 'balanced';
+}
+
+export interface ContactLayoutSection extends AILayoutSection {
+  id: 'contact';
+  variant: 'form-focused' | 'info-blocks' | 'map-integrated' | 'minimal-footer' | 'cta-banner';
+  layout: 'horizontal' | 'vertical' | 'grid';
+  ctaStyle: 'button' | 'banner' | 'floating' | 'inline';
 } 

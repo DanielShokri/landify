@@ -1,10 +1,9 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import LandingPage from './LandingPage';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import BusinessOnboarding from './BusinessOnboarding';
-import ContentGeneration from './ContentGeneration';
-import LandingPageEditor from './LandingPageEditor';
 import GeneratedLandingPage from './GeneratedLandingPage';
+import LandingPage from './LandingPage';
+import LandingPageEditor from './LandingPageEditor';
 import LandingPageList from './LandingPageList';
 
 const queryClient = new QueryClient();
@@ -16,7 +15,6 @@ function App() {
         <Routes>
           <Route path="/" element={<LandingPage />} />
           <Route path="/onboarding" element={<BusinessOnboarding />} />
-          <Route path="/generate" element={<ContentGeneration />} />
           <Route path="/pages" element={<LandingPageList />} />
           <Route path="/editor" element={<LandingPageEditor />} />
           <Route path="/editor/:pageId" element={<LandingPageEditor />} />

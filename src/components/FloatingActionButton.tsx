@@ -1,14 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Edit3, Menu, X, Settings, Share, Eye, Download } from 'lucide-react';
+import { Download, Edit3, Eye, Menu, Share, X } from 'lucide-react';
+import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 interface FloatingActionButtonProps {
   pageId: string;
   businessName: string;
+  htmlContent?: string;
 }
 
-export function FloatingActionButton({ pageId, businessName }: FloatingActionButtonProps) {
+export function FloatingActionButton({ pageId, businessName, htmlContent }: FloatingActionButtonProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);
@@ -62,12 +63,9 @@ export function FloatingActionButton({ pageId, businessName }: FloatingActionBut
 
   const handleDownload = () => {
     try {
-      // Get the current page content
-      const pageContent = document.documentElement.outerHTML;
-      
-      // Create a cleaned HTML version
-      const cleanedHTML = generateCleanHTML(pageContent, businessName);
-      
+      // Use the provided HTML content directly instead of trying to extract from DOM
+      const cleanedHTML = generateCleanHTML(htmlContent || '', businessName);
+
       // Create and trigger download
       const blob = new Blob([cleanedHTML], { type: 'text/html;charset=utf-8' });
       const url = URL.createObjectURL(blob);
@@ -78,13 +76,12 @@ export function FloatingActionButton({ pageId, businessName }: FloatingActionBut
       link.click();
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-      
+
     } catch (error) {
       console.error('❌ Failed to download landing page:', error);
       // Fallback: copy content to clipboard
-      if (navigator.clipboard) {
-        const pageContent = document.documentElement.outerHTML;
-        navigator.clipboard.writeText(pageContent).then(() => {
+      if (navigator.clipboard && htmlContent) {
+        navigator.clipboard.writeText(htmlContent).then(() => {
           alert('Download failed, but page HTML has been copied to clipboard!');
         });
       } else {
@@ -96,138 +93,42 @@ export function FloatingActionButton({ pageId, businessName }: FloatingActionBut
 
   // Generate a clean, self-contained HTML file
   const generateCleanHTML = (originalHTML: string, businessName: string): string => {
-    // Create a clean HTML document
-    return `<!DOCTYPE html>
+    if (!originalHTML) {
+      // Fallback HTML if no content provided
+      return `<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="${businessName} - Professional landing page">
     <title>${businessName} - Landing Page</title>
-    
-    <!-- Tailwind CSS CDN for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Custom styles extracted from the page -->
-    <style>
-        /* Remove floating action button and development artifacts */
-        [data-floating-button], 
-        [data-dev-tools],
-        .floating-action-button {
-            display: none !important;
-        }
-        
-        /* Ensure responsive design */
-        body {
-            margin: 0;
-            padding: 0;
-            font-family: Inter, system-ui, -apple-system, sans-serif;
-        }
-        
-        /* Custom gradient backgrounds */
-        .bg-gradient-to-br {
-            background: linear-gradient(to bottom right, var(--tw-gradient-stops));
-        }
-        
-        /* Backdrop blur effect */
-        .backdrop-blur-sm {
-            backdrop-filter: blur(4px);
-        }
-        
-        /* Animation classes */
-        .animate-fade-in {
-            animation: fadeIn 0.6s ease-in-out;
-        }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-        
-        /* Ensure all interactive elements work */
-        button:hover {
-            transform: translateY(-2px);
-            transition: all 0.3s ease;
-        }
-        
-        /* Print styles */
-        @media print {
-            .no-print {
-                display: none !important;
-            }
-        }
-    </style>
 </head>
 <body>
-    <!-- Generated Landing Page Content -->
-    ${extractMainContent(originalHTML)}
-    
-    <!-- Footer note -->
+    <div class="min-h-screen flex items-center justify-center bg-gray-100">
+        <div class="text-center">
+            <h1 class="text-4xl font-bold text-gray-900 mb-4">${businessName}</h1>
+            <p class="text-gray-600">Landing page content will be available after generation.</p>
+        </div>
+    </div>
+</body>
+</html>`;
+    }
+
+    // Return the HTML content as-is since it's already a complete HTML document
+    // Just add the Landify footer if it doesn't already exist
+    if (!originalHTML.includes('Landing page generated by Landify')) {
+      const footerHTML = `
+    <!-- Landify Footer -->
     <div style="text-align: center; padding: 2rem; background: #f8fafc; border-top: 1px solid #e2e8f0; margin-top: 4rem;">
         <p style="color: #64748b; font-size: 0.875rem; margin: 0;">
             Landing page generated by Landify • <a href="https://landify.ai" style="color: #3b82f6;">Visit Landify</a>
         </p>
-    </div>
-    
-    <script>
-        // Basic interactivity for the exported page
-        document.addEventListener('DOMContentLoaded', function() {
-            // Smooth scrolling for anchor links
-            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-                anchor.addEventListener('click', function (e) {
-                    e.preventDefault();
-                    const target = document.querySelector(this.getAttribute('href'));
-                    if (target) {
-                        target.scrollIntoView({
-                            behavior: 'smooth'
-                        });
-                    }
-                });
-            });
-            
-            // Add fade-in animation to sections
-            const sections = document.querySelectorAll('section, .section');
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.classList.add('animate-fade-in');
-                    }
-                });
-            });
-            
-            sections.forEach(section => {
-                observer.observe(section);
-            });
-        });
-    </script>
-</body>
-</html>`;
-  };
+    </div>`;
 
-  // Extract the main content without development artifacts
-  const extractMainContent = (html: string): string => {
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(html, 'text/html');
-    
-    // Remove floating action button and other development elements
-    const elementsToRemove = [
-      '[data-floating-button]',
-      '.floating-action-button',
-      '[data-dev-tools]',
-      'script[src*="vite"]',
-      'script[src*="localhost"]',
-      'script[src*="@vite"]'
-    ];
-    
-    elementsToRemove.forEach(selector => {
-      const elements = doc.querySelectorAll(selector);
-      elements.forEach(el => el.remove());
-    });
-    
-    // Get the main content (usually the body content)
-    const mainContent = doc.querySelector('body')?.innerHTML || '';
-    
-    return mainContent;
+      return originalHTML.replace('</body>', `${footerHTML}\n</body>`);
+    }
+
+    return originalHTML;
   };
 
   return (
@@ -301,11 +202,10 @@ export function FloatingActionButton({ pageId, businessName }: FloatingActionBut
       <Button
         onClick={toggleMenu}
         aria-label={isMenuOpen ? 'Close menu' : 'Open page options menu'}
-        className={`h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center hover:scale-105 ${
-          isMenuOpen
-            ? 'bg-red-500 hover:bg-red-600 rotate-180'
-            : 'bg-indigo-500 hover:bg-indigo-600'
-        } text-white`}
+        className={`h-14 w-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center hover:scale-105 ${isMenuOpen
+          ? 'bg-red-500 hover:bg-red-600 rotate-180'
+          : 'bg-indigo-500 hover:bg-indigo-600'
+          } text-white`}
       >
         {isMenuOpen ? (
           <X className="h-6 w-6" />
@@ -316,7 +216,7 @@ export function FloatingActionButton({ pageId, businessName }: FloatingActionBut
 
       {/* Backdrop for mobile */}
       {isMenuOpen && (
-        <div 
+        <div
           className="fixed inset-0 bg-black bg-opacity-20 -z-10 md:hidden"
           onClick={() => setIsMenuOpen(false)}
         />

@@ -1,13 +1,13 @@
-import { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, useParams } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { GeneratedContent } from '@/types/content';
-import { BusinessData } from '@/types/business';
+import { Textarea } from '@/components/ui/textarea';
 import { landingPageStorage } from '@/lib/landingPageStorage';
+import { BusinessData } from '@/types/business';
+import { GeneratedContent } from '@/types/content';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 
 function LandingPageEditor() {
   const [searchParams] = useSearchParams();
@@ -23,24 +23,24 @@ function LandingPageEditor() {
     if (pageId) {
       try {
         const landingPageData = landingPageStorage.getLandingPage(pageId);
-        
+
         if (landingPageData) {
           setBusinessData(landingPageData.businessData);
           setContent(landingPageData.content);
           setCurrentPageId(pageId);
         } else {
           console.error('Landing page not found:', pageId);
-          navigate('/generate');
+          navigate('/onboarding');
         }
       } catch (error) {
         console.error('Failed to load landing page:', error);
-        navigate('/generate');
+        navigate('/onboarding');
       }
     } else {
       // Fallback to old parameter-based approach for backwards compatibility
       const businessDataParam = searchParams.get('businessData');
       const generatedContentParam = searchParams.get('generatedContent');
-      
+
       if (businessDataParam && generatedContentParam) {
         try {
           const parsedBusinessData = JSON.parse(businessDataParam);
@@ -50,10 +50,10 @@ function LandingPageEditor() {
           setCurrentPageId(null); // No existing page ID
         } catch (error) {
           console.error('Failed to parse data:', error);
-          navigate('/generate');
+          navigate('/onboarding');
         }
       } else {
-        navigate('/generate');
+        navigate('/onboarding');
       }
     }
   }, [pageId, searchParams, navigate]);
@@ -91,7 +91,7 @@ function LandingPageEditor() {
   const handleSave = () => {
     if (content && businessData) {
       let savedPageId: string;
-      
+
       if (currentPageId) {
         // Update existing page
         const success = landingPageStorage.updateLandingPage(currentPageId, businessData, content);
@@ -105,7 +105,7 @@ function LandingPageEditor() {
         // Create new page
         savedPageId = landingPageStorage.saveLandingPage(businessData, content);
       }
-      
+
       // Navigate to clean UUID-based URL
       navigate(`/page/${savedPageId}`);
     }
@@ -126,13 +126,13 @@ function LandingPageEditor() {
           Landify
         </div>
         <div className="flex items-center space-x-8">
-          <button 
+          <button
             onClick={() => navigate('/pages')}
             className="text-gray-300 hover:text-white transition-colors"
           >
             ← Back to Pages
           </button>
-          <Button 
+          <Button
             onClick={() => navigate(`/page/${currentPageId || 'preview'}`)}
             className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white"
           >
@@ -159,14 +159,14 @@ function LandingPageEditor() {
           <div className="p-8">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="grid w-full grid-cols-2 mb-8 bg-white/10 border border-white/20">
-                <TabsTrigger 
-                  value="edit" 
+                <TabsTrigger
+                  value="edit"
                   className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
                 >
                   ✏️ Edit Content
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="preview" 
+                <TabsTrigger
+                  value="preview"
                   className="text-white data-[state=active]:bg-white/20 data-[state=active]:text-white"
                 >
                   👁️ Live Preview
@@ -344,14 +344,14 @@ function LandingPageEditor() {
                 </div>
 
                 <div className="flex space-x-4 pt-6">
-                  <Button 
-                    onClick={handleSave} 
+                  <Button
+                    onClick={handleSave}
                     className="flex-1 bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium py-3 rounded-lg transition-all duration-300 shadow-lg hover:shadow-xl"
                     size="lg"
                   >
                     💾 Save Changes
                   </Button>
-                  <Button 
+                  <Button
                     onClick={() => setActiveTab('preview')}
                     variant="outline"
                     className="border-white/20 text-black hover:bg-white/10 hover:text-white hover:border-white/40 transition-all duration-300"
@@ -377,7 +377,7 @@ function LandingPageEditor() {
                   <div className="text-center space-y-6 backdrop-blur-sm bg-white/5 border border-white/10 rounded-xl p-8">
                     <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight">{content.headline}</h1>
                     <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed">{content.subheadline}</p>
-                    <Button 
+                    <Button
                       size="lg"
                       className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium px-8 py-3 text-lg"
                     >

@@ -1,9 +1,9 @@
-import express from 'express';
+const express = require('express');
 
 const router = express.Router();
 
 // GET /api/google-maps/places/autocomplete
-router.get('/places/autocomplete', async (req, res): Promise<any> => {
+router.get('/places/autocomplete', async (req: any, res: any): Promise<any> => {
   try {
     const { input } = req.query;
 
@@ -50,7 +50,7 @@ router.get('/places/autocomplete', async (req, res): Promise<any> => {
 });
 
 // GET /api/google-maps/places/search
-router.get('/places/search', async (req, res): Promise<any> => {
+router.get('/places/search', async (req: any, res: any): Promise<any> => {
   try {
     const { query } = req.query;
 
@@ -97,7 +97,7 @@ router.get('/places/search', async (req, res): Promise<any> => {
 });
 
 // GET /api/google-maps/places/details/:placeId
-router.get('/places/details/:placeId', async (req, res): Promise<any> => {
+router.get('/places/details/:placeId', async (req: any, res: any): Promise<any> => {
   try {
     const { placeId } = req.params;
 
@@ -156,4 +156,4 @@ router.get('/places/details/:placeId', async (req, res): Promise<any> => {
   }
 });
 
-export { router as googleMapsRouter };
+module.exports = { googleMapsRouter: router };

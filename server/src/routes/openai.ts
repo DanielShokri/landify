@@ -1,5 +1,5 @@
-import express from 'express';
-import OpenAI from 'openai';
+const express = require('express');
+const OpenAI = require('openai').default;
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ function getOpenAIClient(): OpenAI {
 }
 
 // POST /api/openai/chat/completions
-router.post('/chat/completions', async (req, res): Promise<any> => {
+router.post('/chat/completions', async (req: any, res: any): Promise<any> => {
   try {
     const { messages, model, temperature, max_tokens } = req.body;
 
@@ -84,7 +84,7 @@ router.post('/chat/completions', async (req, res): Promise<any> => {
 });
 
 // POST /api/openai/generate-content (for our fast generation service)
-router.post('/generate-content', async (req, res): Promise<any> => {
+router.post('/generate-content', async (req: any, res: any): Promise<any> => {
   try {
     const { businessData, analysisType } = req.body;
 
@@ -190,4 +190,4 @@ Return only the complete HTML document.`;
   }
 });
 
-export { router as openaiRouter };
+module.exports = { openaiRouter: router };

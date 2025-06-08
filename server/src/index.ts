@@ -1,13 +1,17 @@
-// Load environment variables first, before any other imports
-import dotenv from 'dotenv';
-dotenv.config();
+// Load environment variables first
+require('dotenv').config({ path: require('path').resolve(__dirname, '../.env') });
+console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY);
 
-import cors from 'cors';
-import express from 'express';
-import rateLimit from 'express-rate-limit';
-import helmet from 'helmet';
-import { googleMapsRouter } from './routes/google-maps';
-import { openaiRouter } from './routes/openai';
+// Import dependencies
+const cors = require('cors');
+const express = require('express');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const { googleMapsRouter } = require('./routes/google-maps');
+const { openaiRouter } = require('./routes/openai');
+
+// Import types
+import type { NextFunction, Request, Response } from 'express';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -60,7 +64,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/health', (req, res) => {
+app.get('/health', (req: Request, res: Response) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -73,7 +77,7 @@ app.use('/api/openai', openaiRouter);
 app.use('/api/google-maps', googleMapsRouter);
 
 // 404 handler
-app.use('*', (req, res) => {
+app.use('*', (req: Request, res: Response) => {
   res.status(404).json({ 
     error: 'Endpoint not found',
     message: `Route ${req.originalUrl} not found`
@@ -81,7 +85,7 @@ app.use('*', (req, res) => {
 });
 
 // Global error handler
-app.use((error: Error, req: express.Request, res: express.Response, _next: express.NextFunction) => {
+app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
   console.error('Global error handler:', error);
   
   res.status(500).json({
@@ -98,4 +102,4 @@ app.listen(PORT, () => {
   console.log(`⚡ Health check: http://localhost:${PORT}/health`);
 });
 
-export default app; 
+module.exports = app; 

@@ -13,17 +13,28 @@ export const createCompletion = async (
     model?: string;
     temperature?: number;
     max_tokens?: number;
+    enforceEnglish?: boolean;
   } = {}
 ) => {
   const {
     model = 'gpt-4o-mini',
     temperature = 0.7,
-    max_tokens = 2000
+    max_tokens = 2000,
+    enforceEnglish = true
   } = options;
+
+  // Add English language enforcement to system message if enabled
+  const enhancedMessages = enforceEnglish ? [
+    {
+      role: 'system' as const,
+      content: 'IMPORTANT: Respond ONLY in English language. All content must be in English.'
+    },
+    ...messages
+  ] : messages;
 
   return await openai.chat.completions.create({
     model,
-    messages,
+    messages: enhancedMessages,
     temperature,
     max_tokens
   });

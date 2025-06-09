@@ -1,25 +1,25 @@
-const express = require('express');
+const expressOpenAI = require('express');
 const OpenAI = require('openai').default;
 
-const router = express.Router();
+const openaiRouterInstance = expressOpenAI.Router();
 
 // Lazy initialization of OpenAI client
-let openai: OpenAI | null = null;
+let openaiClient: typeof OpenAI | null = null;
 
-function getOpenAIClient(): OpenAI {
-  if (!openai) {
+function getOpenAIClient(): typeof OpenAI {
+  if (!openaiClient) {
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY environment variable is not set');
     }
-    openai = new OpenAI({
+    openaiClient = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY
     });
   }
-  return openai;
+  return openaiClient;
 }
 
 // POST /api/openai/chat/completions
-router.post('/chat/completions', async (req: any, res: any): Promise<any> => {
+openaiRouterInstance.post('/chat/completions', async (req: any, res: any): Promise<any> => {
   try {
     const { messages, model, temperature, max_tokens } = req.body;
 
@@ -84,7 +84,7 @@ router.post('/chat/completions', async (req: any, res: any): Promise<any> => {
 });
 
 // POST /api/openai/generate-content (for our fast generation service)
-router.post('/generate-content', async (req: any, res: any): Promise<any> => {
+openaiRouterInstance.post('/generate-content', async (req: any, res: any): Promise<any> => {
   try {
     const { businessData, analysisType } = req.body;
 
@@ -190,4 +190,4 @@ Return only the complete HTML document.`;
   }
 });
 
-module.exports = { openaiRouter: router };
+module.exports = { openaiRouter: openaiRouterInstance };

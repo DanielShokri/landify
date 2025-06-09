@@ -1,6 +1,5 @@
 import { Loader } from '@googlemaps/js-api-loader';
 import type { BusinessSearchResult, GoogleMapsPlace, SocialMediaLinks } from '../types/business';
-import { shouldUseProxy } from './proxyService';
 
 class GoogleMapsService {
   private apiKey: string;
@@ -8,15 +7,6 @@ class GoogleMapsService {
   private placesService: google.maps.places.PlacesService | null = null;
   private autocompleteService: google.maps.places.AutocompleteService | null = null;
   private isInitialized = false;
-  private useProxy: boolean;
-
-  /**
-   * Helper method to check if a place is currently open
-   * Replaces the deprecated open_now field functionality
-   */
-
-
-
 
   /**
    * Extract social media links from business website and other sources
@@ -38,19 +28,11 @@ class GoogleMapsService {
       if (url.includes('tiktok.com')) socialMedia.tiktok = place.website;
       if (url.includes('yelp.com')) socialMedia.yelp = place.website;
     }
-
-    // Additional social media detection could be enhanced with:
-    // - Web scraping the business website for social media links
-    // - Cross-referencing with business directories
-    // - Using business name to search social platforms
     
     return socialMedia;
   }
 
-
-
   constructor() {
-    this.useProxy = shouldUseProxy();
     this.apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';
     this.loader = new Loader({
       apiKey: this.apiKey,

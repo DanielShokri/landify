@@ -1,20 +1,24 @@
-import type { ProgressEvent } from '@/types/agents';
 import type { ContentGenerationRequest, GeneratedContent } from '@/types/content';
 import OpenAI from 'openai';
 import { Observable } from 'rxjs';
 import { proxyService, shouldUseProxy } from './proxyService';
 
+interface ProgressEvent {
+  stage: string;
+  progress: number;
+  message: string;
+}
+
 /**
- * Fast Multi-Agent Content Generation Service
+ * Fast Content Generation Service
  * 
  * Optimized for speed with:
- * - Parallel agent execution
+ * - Parallel content generation
  * - Streamlined prompts
- * - Single-pass generation
  * - Template-based HTML
  * - Secure API proxy in production
  */
-class FastAgenticsService {
+class FastContentService {
   private openai: OpenAI;
   private useProxy: boolean;
 
@@ -33,13 +37,13 @@ class FastAgenticsService {
     const businessData = request.businessData;
 
     // Run analysis and content generation in parallel
-    const [analysis, contentData] = await Promise.all([
-      this.fastBusinessAnalysis(businessData),
-      this.fastContentGeneration(businessData)
+    const [, contentData] = await Promise.all([
+      this.generateBusinessAnalysis(businessData),
+      this.generateContent(businessData)
     ]);
 
     // Generate HTML based on the content
-    const htmlDocument = await this.fastHTMLGeneration(businessData, analysis, contentData);
+    const htmlDocument = await this.generateHTML(businessData, contentData);
 
     return {
       htmlDocument,
@@ -58,8 +62,19 @@ class FastAgenticsService {
       },
       theme: this.generateDefaultTheme(businessData),
       trustSignals: contentData.trustSignals || ['Licensed & Insured', 'Local Experts', '100% Satisfaction Guarantee'],
-      locationHighlights: [`Serving ${this.extractCity(businessData.address)}`, 'Fast Response Time', 'Local Knowledge'],
-      businessHours: businessData.hours || 'Monday-Friday: 9AM-5PM'
+      locationHighlights: {
+        neighborhood: this.extractCity(businessData.address),
+        accessibility: 'Easy Access',
+        parking: 'Parking Available',
+        nearbyLandmarks: 'Conveniently Located'
+      },
+      businessHours: {
+        schedule: typeof businessData.hours === 'string' 
+          ? businessData.hours 
+          : 'Monday-Friday: 9:00 AM - 5:00 PM, Saturday-Sunday: Closed',
+        specialHours: 'Holiday hours may vary',
+        availability: 'Available during business hours'
+      }
     };
   }
 
@@ -85,9 +100,9 @@ class FastAgenticsService {
           const businessData = request.businessData;
 
           // Run parallel generation
-          const [analysis, contentData] = await Promise.all([
-            this.fastBusinessAnalysis(businessData),
-            this.fastContentGeneration(businessData)
+          const [, contentData] = await Promise.all([
+            this.generateBusinessAnalysis(businessData),
+            this.generateContent(businessData)
           ]);
 
           observer.next({
@@ -96,7 +111,7 @@ class FastAgenticsService {
             message: '🎨 Generating optimized HTML...'
           });
 
-          const htmlDocument = await this.fastHTMLGeneration(businessData, analysis, contentData);
+          const htmlDocument = await this.generateHTML(businessData, contentData);
 
           observer.next({
             stage: 'finalizing',
@@ -121,8 +136,19 @@ class FastAgenticsService {
             },
             theme: this.generateDefaultTheme(businessData),
             trustSignals: contentData.trustSignals || ['Licensed & Insured', 'Local Experts', '100% Satisfaction Guarantee'],
-            locationHighlights: [`Serving ${this.extractCity(businessData.address)}`, 'Fast Response Time', 'Local Knowledge'],
-            businessHours: businessData.hours || 'Monday-Friday: 9AM-5PM'
+            locationHighlights: {
+              neighborhood: this.extractCity(businessData.address),
+              accessibility: 'Easy Access',
+              parking: 'Parking Available',
+              nearbyLandmarks: 'Conveniently Located'
+            },
+            businessHours: {
+              schedule: typeof businessData.hours === 'string' 
+                ? businessData.hours 
+                : 'Monday-Friday: 9:00 AM - 5:00 PM, Saturday-Sunday: Closed',
+              specialHours: 'Holiday hours may vary',
+              availability: 'Available during business hours'
+            }
           };
 
           observer.next({
@@ -154,7 +180,7 @@ class FastAgenticsService {
   /**
    * Fast business analysis using streamlined prompts
    */
-  private async fastBusinessAnalysis(businessData: any): Promise<any> {
+  private async generateBusinessAnalysis(businessData: any): Promise<any> {
     if (this.useProxy) {
       const response = await proxyService.generateContent({
         businessData,
@@ -190,7 +216,7 @@ Analyze the target market and competitive edge. Return JSON:
   /**
    * Fast content generation using streamlined prompts
    */
-  private async fastContentGeneration(businessData: any): Promise<any> {
+  private async generateContent(businessData: any): Promise<any> {
     if (this.useProxy) {
       const response = await proxyService.generateContent({
         businessData,
@@ -206,7 +232,7 @@ Description: ${businessData.description || 'N/A'}
 Create compelling content. Return JSON:
 {
   "headline": "catchy main headline",
-  "subheadline": "supporting description",
+  "subheadline": "supporting description", 
   "valuePropositions": ["benefit 1", "benefit 2", "benefit 3"],
   "services": [{"name": "service name", "description": "brief description", "features": ["feature 1", "feature 2"]}],
   "callToAction": {"primary": {"text": "action text", "action": "contact"}, "secondary": {"text": "secondary text", "action": "info"}},
@@ -230,7 +256,7 @@ Create compelling content. Return JSON:
   /**
    * Fast HTML generation using template-based approach
    */
-  private async fastHTMLGeneration(businessData: any, analysis: any, content: any): Promise<string> {
+  private async generateHTML(businessData: any, content: any): Promise<string> {
     if (this.useProxy) {
       const response = await proxyService.generateContent({
         businessData,
@@ -466,23 +492,23 @@ Return only the complete HTML document.`;
   private extractCity(address: string): string {
     if (!address) return 'your area';
     const parts = address.split(',');
-    return parts.length > 1 ? parts[parts.length - 2].trim() : 'your area';
+    return parts.length > 1 ? (parts[parts.length - 2]?.trim() || 'your area') : 'your area';
   }
 
   /**
-   * Get agent capabilities
+   * Get service capabilities
    */
   getAgentCapabilities() {
     return {
       agents: [
         {
           id: 'fast_analyzer',
-          name: 'Fast Analysis Agent',
+          name: 'Fast Analysis',
           description: 'Rapid business analysis with parallel processing'
         },
         {
           id: 'fast_content',
-          name: 'Fast Content Agent',
+          name: 'Fast Content Generator',
           description: 'Streamlined content generation'
         },
         {
@@ -495,15 +521,15 @@ Return only the complete HTML document.`;
         'Parallel processing',
         'Streamlined prompts',
         'Template-based generation',
-        '3x faster than standard agents'
+        'Fast generation speed'
       ],
       limitations: [
         'Requires OpenAI API key',
-        'Less detailed analysis than full agents'
+        'Requires internet connection'
       ]
     };
   }
 }
 
 // Export singleton instance
-export const fastAgenticsService = new FastAgenticsService(); 
+export const fastContentService = new FastContentService(); 

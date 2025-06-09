@@ -7,19 +7,19 @@ import AutocompleteDropdown from './AutocompleteDropdown';
 type AutocompleteSuggestion = google.maps.places.AutocompletePrediction;
 
 interface SearchInputProps {
-    value: string;
-    placeholder?: string;
-    isLoading?: boolean;
-    showAutocomplete?: boolean;
-    hasAutocompleteSuggestions?: boolean;
-    autocompleteSuggestions?: AutocompleteSuggestion[];
-    buttonText?: string;
-    className?: string;
-    onInputChange: (value: string) => void;
-    onInputFocus: () => void;
-    onInputBlur: () => void;
-    onSearch: () => void;
-    onAutocompleteSelect: (suggestion: AutocompleteSuggestion) => void;
+  value: string;
+  placeholder?: string;
+  isLoading?: boolean;
+  showAutocomplete?: boolean;
+  hasAutocompleteSuggestions?: boolean;
+  autocompleteSuggestions?: AutocompleteSuggestion[];
+  buttonText?: string;
+  className?: string;
+  onInputChange: (value: string) => void;
+  onInputFocus: () => void;
+  onInputBlur: () => void;
+  onSearch: () => void;
+  onAutocompleteSelect: (suggestion: AutocompleteSuggestion) => void;
 }
 
 const SearchInput = ({
@@ -47,7 +47,8 @@ const SearchInput = ({
 
   return (
     <div className={`relative ${className}`}>
-      <div className="flex space-x-3">
+      {/* Mobile: Vertical stack, Desktop: Horizontal flex */}
+      <div className="flex flex-col space-y-3 sm:flex-row sm:space-y-0 sm:space-x-3">
         <div className="flex-1 relative">
           <Input
             ref={inputRef}
@@ -72,7 +73,7 @@ const SearchInput = ({
         <Button
           onClick={onSearch}
           disabled={isLoading || !value.trim()}
-          className="min-w-[100px] px-4 py-2 text-sm sm:min-w-[120px] sm:px-6 sm:py-3 sm:text-base bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
+          className="w-full sm:w-auto min-w-[100px] px-4 py-2 text-sm sm:min-w-[120px] sm:px-6 sm:py-3 sm:text-base bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600 text-white font-medium transition-all duration-300 shadow-lg hover:shadow-xl"
         >
           {isLoading ? (
             <>

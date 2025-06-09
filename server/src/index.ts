@@ -4,17 +4,15 @@ console.log('OPENAI_API_KEY:', process.env.OPENAI_API_KEY);
 
 // Import dependencies
 const cors = require('cors');
-const express = require('express');
+const expressMain = require('express');
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet');
 const { googleMapsRouter } = require('./routes/google-maps');
 const { openaiRouter } = require('./routes/openai');
+const { contentRouter } = require('./routes/content-generation');
 
-// Import types
-import type { NextFunction, Request, Response } from 'express';
-
-const app = express();
-const PORT = process.env.PORT || 3001;
+const app = expressMain();
+const PORT = process.env.PORT || 8080;
 
 // Security middleware
 app.use(helmet());
@@ -60,11 +58,11 @@ const limiter = rateLimit({
 app.use(limiter);
 
 // Body parsing middleware
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: true }));
+app.use(expressMain.json({ limit: '10mb' }));
+app.use(expressMain.urlencoded({ extended: true }));
 
 // Health check endpoint
-app.get('/health', (req: Request, res: Response) => {
+app.get('/health', (req: any, res: any) => {
   res.json({ 
     status: 'healthy',
     timestamp: new Date().toISOString(),
@@ -75,9 +73,10 @@ app.get('/health', (req: Request, res: Response) => {
 // API routes
 app.use('/api/openai', openaiRouter);
 app.use('/api/google-maps', googleMapsRouter);
+app.use('/api/content-generation', contentRouter);
 
 // 404 handler
-app.use('*', (req: Request, res: Response) => {
+app.use('*', (req: any, res: any) => {
   res.status(404).json({ 
     error: 'Endpoint not found',
     message: `Route ${req.originalUrl} not found`
@@ -85,7 +84,7 @@ app.use('*', (req: Request, res: Response) => {
 });
 
 // Global error handler
-app.use((error: Error, req: Request, res: Response, _next: NextFunction) => {
+app.use((error: Error, req: any, res: any, _next: any) => {
   console.error('Global error handler:', error);
   
   res.status(500).json({

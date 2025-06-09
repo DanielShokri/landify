@@ -3,7 +3,7 @@
  * This replaces direct OpenAI and Google Maps API calls for production security
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:3001';
+const API_BASE_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:8080';
 
 interface OpenAIResponse {
   choices: Array<{
@@ -205,5 +205,5 @@ export const shouldUseProxy = (): boolean => {
 
 // Export types for use in other files
 export type {
-    GoogleMapsAutocompleteResponse, GoogleMapsPlaceDetails, GoogleMapsSearchResponse, OpenAIResponse
+  GoogleMapsAutocompleteResponse, GoogleMapsPlaceDetails, GoogleMapsSearchResponse, OpenAIResponse
 };

@@ -6,7 +6,7 @@ const contentRouterInstance = expressContent.Router();
 // Lazy initialization of OpenAI client
 let contentOpenaiClient: typeof OpenAIContent | null = null;
 
-function getOpenAIClient(): typeof OpenAIContent {
+function getContentOpenAIClient(): typeof OpenAIContent {
   if (!contentOpenaiClient) {
     if (!process.env.OPENAI_API_KEY) {
       throw new Error('OPENAI_API_KEY environment variable is not set');
@@ -96,7 +96,7 @@ Analyze the target market and competitive edge. Return JSON:
   "emotionalTriggers": "key emotional appeal"
 }`;
 
-  const completion = await getOpenAIClient().chat.completions.create({
+  const completion = await getContentOpenAIClient().chat.completions.create({
     model: 'gpt-4o-mini',
     messages: [
       { role: 'system', content: 'You are a business analyst. Return only JSON in English.' },
@@ -126,10 +126,10 @@ Create compelling content. Return JSON:
   "trustSignals": ["signal 1", "signal 2", "signal 3"]
 }`;
 
-  const completion = await getOpenAIClient().chat.completions.create({
-    model: 'gpt-4o-mini',
-    messages: [
-      { role: 'system', content: 'You are a marketing expert. Return only JSON in English.' },
+      const completion = await getContentOpenAIClient().chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: 'You are a marketing expert. Return only JSON in English.' },
       { role: 'user', content: prompt }
     ],
     temperature: 0.8,
@@ -158,7 +158,7 @@ Requirements:
 Return only the complete HTML document.`;
 
   try {
-    const completion = await getOpenAIClient().chat.completions.create({
+    const completion = await getContentOpenAIClient().chat.completions.create({
       model: 'gpt-4o-mini',
       messages: [
         { role: 'system', content: 'You are a web designer. Return only HTML in English.' },

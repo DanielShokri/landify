@@ -1,4 +1,4 @@
-import { fastAgenticsService } from '@/api/fastAgenticsService';
+import { contentService } from '@/api/contentService';
 import type { ContentGenerationRequest, GeneratedContent } from '@/types/content';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
@@ -10,87 +10,50 @@ interface FastGenerationState {
 }
 
 export function useFastGeneration() {
+  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
   const [generationState, setGenerationState] = useState<FastGenerationState>({
     currentStage: 'idle',
     progress: 0,
     logs: []
   });
 
-  const [generatedContent, setGeneratedContent] = useState<GeneratedContent | null>(null);
-  const [isGenerating, setIsGenerating] = useState(false);
-
+  // React Query mutation for backend generation
   const mutation = useMutation({
-    mutationFn: (request: ContentGenerationRequest) => {
-      setGenerationState({
-        currentStage: 'starting',
-        progress: 0,
-        logs: []
-      });
-
-      return fastAgenticsService.generateLandingPageWithAgents(request);
+    mutationFn: async (request: ContentGenerationRequest): Promise<GeneratedContent> => {
+      return contentService.generateLandingPageWithAgents(request);
     },
     onSuccess: (data) => {
-      if (!generatedContent) {
-        setGeneratedContent(data);
-        setGenerationState(prev => ({
-          ...prev,
-          currentStage: 'completed',
-          progress: 100,
-          logs: [...prev.logs, '🎉 Fast generation complete!']
-        }));
-      }
+      setGeneratedContent(data);
+      setGenerationState({
+        currentStage: 'completed',
+        progress: 100,
+        logs: ['Generation completed successfully!']
+      });
     },
     onError: (error: Error) => {
-      console.error('Fast generation failed:', error);
-      setGenerationState(prev => ({
-        ...prev,
+      console.error('Generation failed:', error);
+      setGenerationState({
         currentStage: 'error',
-        logs: [...prev.logs, `❌ Error: ${error.message}`]
-      }));
+        progress: 0,
+        logs: [`Error: ${error.message}`]
+      });
     }
   });
 
+  // Simplified generation method (backend handles the complexity)
   const generateWithAgents = async (request: ContentGenerationRequest): Promise<GeneratedContent> => {
-    setIsGenerating(true);
-    
-    return new Promise((resolve, reject) => {
-      const progressSubscription = fastAgenticsService.generateWithProgress(request).subscribe({
-        next: (event) => {
-          if ('type' in event && event.type === 'result') {
-            setGeneratedContent(event.data);
-            setGenerationState(prev => ({
-              ...prev,
-              currentStage: 'completed',
-              progress: 100
-            }));
-            setIsGenerating(false);
-            resolve(event.data);
-          } else {
-            const progressEvent = event as any;
-            setGenerationState(prev => ({
-              ...prev,
-              currentStage: progressEvent.stage,
-              progress: progressEvent.progress,
-              logs: [...prev.logs, progressEvent.message]
-            }));
-          }
-        },
-        complete: () => {
-          progressSubscription.unsubscribe();
-          setIsGenerating(false);
-        },
-        error: (error) => {
-          progressSubscription.unsubscribe();
-          setIsGenerating(false);
-          reject(error);
-        }
-      });
+    setGenerationState({
+      currentStage: 'generating',
+      progress: 50,
+      logs: ['Sending request to backend...']
     });
+
+    const result = await mutation.mutateAsync(request);
+    return result;
   };
 
   const clearContent = () => {
     setGeneratedContent(null);
-    setIsGenerating(false);
     setGenerationState({
       currentStage: 'idle',
       progress: 0,
@@ -99,8 +62,8 @@ export function useFastGeneration() {
     mutation.reset();
   };
 
-  const getAgentCapabilities = () => {
-    return fastAgenticsService.getAgentCapabilities();
+  const getAgentCapabilities = async () => {
+    return contentService.getAgentCapabilities();
   };
 
   return {
@@ -109,7 +72,7 @@ export function useFastGeneration() {
     getAgentCapabilities,
     generatedContent,
     generationState,
-    isLoading: isGenerating,
+    isLoading: mutation.isPending,
     error: mutation.error as Error | null,
     isSuccess: mutation.isSuccess,
     

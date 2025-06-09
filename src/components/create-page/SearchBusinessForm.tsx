@@ -44,7 +44,7 @@ const SearchBusinessForm = ({
     onGenerateLandingPage
 }: SearchBusinessFormProps) => {
     return (
-        <>
+        <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl p-6 shadow-xl space-y-6">
             <div className="space-y-4">
                 <Label htmlFor="search" className="text-base font-medium text-white">
                     Search for your business on Google Maps
@@ -114,7 +114,7 @@ const SearchBusinessForm = ({
                     Enter details manually
                 </Button>
             </div>
-        </>
+        </div>
     );
 };
 

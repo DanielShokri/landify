@@ -96,8 +96,8 @@ function LandingPage() {
 
                 <FeatureCard
                     icon={Puzzle}
-                    title="Visual Page Editor"
-                    description="Customize and preview your generated content with our intuitive visual editor before publishing your professional landing page."
+                    title="Professional Design"
+                    description="Get a beautifully designed landing page with professional layouts, optimized for conversions and mobile responsiveness."
                     variant="detailed"
                     gradientFrom="indigo-400"
                     gradientTo="indigo-600"
@@ -143,7 +143,7 @@ function LandingPage() {
                             </div>
                             <h3 className="text-xl font-semibold text-white mb-3">Generate & Publish</h3>
                             <p className="text-gray-300 leading-relaxed max-w-sm">
-                                AI creates your professional content, then customize it with our visual editor before going live
+                                AI creates your professional landing page with optimized content and design, ready to go live instantly
                             </p>
                         </div>
                     </div>

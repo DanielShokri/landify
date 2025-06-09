@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/button';
-import { Download, Edit3, Eye, Menu, Share, X } from 'lucide-react';
+import { Download, Eye, Menu, Share, X } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,10 +35,7 @@ export function FloatingActionButton({ pageId, businessName, htmlContent }: Floa
     };
   }, [isMenuOpen]);
 
-  const handleEdit = () => {
-    navigate(`/editor/${pageId}`);
-    setIsMenuOpen(false);
-  };
+
 
   const handleShare = () => {
     if (navigator.share) {
@@ -136,20 +133,7 @@ export function FloatingActionButton({ pageId, businessName, htmlContent }: Floa
       {/* Menu Items */}
       {isMenuOpen && (
         <div className="absolute bottom-16 right-0 mb-4 space-y-3 animate-in slide-in-from-bottom duration-200">
-          {/* Edit Button */}
-          <div className="flex items-center justify-end space-x-3">
-            <div className="bg-gray-900 text-white px-3 py-1 rounded-lg text-sm font-medium shadow-lg whitespace-nowrap opacity-90">
-              Edit Page
-            </div>
-            <Button
-              onClick={handleEdit}
-              size="sm"
-              aria-label="Edit this landing page"
-              className="h-12 w-12 rounded-full bg-blue-500 hover:bg-blue-600 text-white shadow-lg hover:shadow-xl transition-all duration-200 flex items-center justify-center hover:scale-105"
-            >
-              <Edit3 className="h-5 w-5" />
-            </Button>
-          </div>
+
 
           {/* Share Button */}
           <div className="flex items-center justify-end space-x-3">

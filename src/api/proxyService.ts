@@ -3,7 +3,9 @@
  * This replaces direct OpenAI and Google Maps API calls for production security
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_SERVER_URL || 'http://localhost:8080';
+const API_BASE_URL = import.meta.env.PROD 
+  ? (import.meta.env.VITE_PROD_API_URL || 'https://landify-be-production.up.railway.app')
+  : (import.meta.env.VITE_API_SERVER_URL || 'http://localhost:8080');
 
 interface OpenAIResponse {
   choices: Array<{

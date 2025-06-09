@@ -81,7 +81,6 @@ function LandingPageList() {
                 key={page.id}
                 page={page}
                 onView={() => navigate(`/page/${page.id}`)}
-                onEdit={() => navigate(`/editor/${page.id}`)}
                 onDelete={() => handleDelete(page.id, page.businessData.name)}
                 formatDate={formatDate}
               />
@@ -131,13 +130,11 @@ function EmptyState({ onCreateNew }: { onCreateNew: () => void }) {
 function LandingPageCard({
   page,
   onView,
-  onEdit,
   onDelete,
   formatDate
 }: {
   page: LandingPageData;
   onView: () => void;
-  onEdit: () => void;
   onDelete: () => void;
   formatDate: (date: string) => string;
 }) {
@@ -171,24 +168,14 @@ function LandingPageCard({
           >
             View Page
           </Button>
-          <div className="flex space-x-2">
-            <Button
-              onClick={onEdit}
-              variant="outline"
-              size="sm"
-              className="flex-1 border-white/20 text-black hover:bg-white/10 hover:text-white"
-            >
-              Edit
-            </Button>
-            <Button
-              onClick={onDelete}
-              variant="outline"
-              size="sm"
-              className="border-red-400/20 text-red-400 hover:bg-red-500/10 hover:text-red-300"
-            >
-              Delete
-            </Button>
-          </div>
+          <Button
+            onClick={onDelete}
+            variant="outline"
+            size="sm"
+            className="w-full border-red-400/20 text-red-400 hover:bg-red-500/10 hover:text-red-300"
+          >
+            Delete
+          </Button>
         </div>
 
         <div className="text-xs text-gray-500 border-t border-white/10 pt-3">

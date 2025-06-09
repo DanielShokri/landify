@@ -9,14 +9,6 @@ class GoogleMapsService {
   private isInitialized = false;
 
   /**
-   * Helper method to check if a place is currently open
-   * Replaces the deprecated open_now field functionality
-   */
-
-
-
-
-  /**
    * Extract social media links from business website and other sources
    */
   private async extractSocialMediaLinks(place: google.maps.places.PlaceResult): Promise<SocialMediaLinks> {
@@ -36,16 +28,9 @@ class GoogleMapsService {
       if (url.includes('tiktok.com')) socialMedia.tiktok = place.website;
       if (url.includes('yelp.com')) socialMedia.yelp = place.website;
     }
-
-    // Additional social media detection could be enhanced with:
-    // - Web scraping the business website for social media links
-    // - Cross-referencing with business directories
-    // - Using business name to search social platforms
     
     return socialMedia;
   }
-
-
 
   constructor() {
     this.apiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '';

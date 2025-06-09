@@ -10,19 +10,21 @@ export { default as FloatingActionButton } from './FloatingActionButton';
 export { default as GenerationProgress } from './GenerationProgress';
 export { default as HTMLRenderer } from './HTMLRenderer';
 
-// Business Onboarding Components
-export { default as AutocompleteDropdown } from './AutocompleteDropdown';
-export { default as BusinessSearchResult } from './BusinessSearchResult';
-export { default as FormField } from './FormField';
-export { default as ProgressSteps } from './ProgressSteps';
-export { default as SearchInput } from './SearchInput';
-export { default as SelectedBusinessCard } from './SelectedBusinessCard';
+// Page Components
+export { default as CreatePage } from './create-page';
+export { default as LandingPage } from './landing-page';
 
-// Business Onboarding Form Components
-export { default as AIFeaturesInfo } from './AIFeaturesInfo';
-export { default as BusinessInformationForm } from './BusinessInformationForm';
-export { default as ManualEntryForm } from './ManualEntryForm';
-export { default as SearchBusinessForm } from './SearchBusinessForm';
+// Create Page Components (re-exported for convenience)
+export { default as AIFeaturesInfo } from './create-page/AIFeaturesInfo';
+export { default as AutocompleteDropdown } from './create-page/AutocompleteDropdown';
+export { default as BusinessInformationForm } from './create-page/BusinessInformationForm';
+export { default as BusinessSearchResult } from './create-page/BusinessSearchResult';
+export { default as FormField } from './create-page/FormField';
+export { default as ManualEntryForm } from './create-page/ManualEntryForm';
+export { default as ProgressSteps } from './create-page/ProgressSteps';
+export { default as SearchBusinessForm } from './create-page/SearchBusinessForm';
+export { default as SearchInput } from './create-page/SearchInput';
+export { default as SelectedBusinessCard } from './create-page/SelectedBusinessCard';
 
 // Re-export UI components
 export * from './ui/button';

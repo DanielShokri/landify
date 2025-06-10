@@ -57,12 +57,16 @@ const Layout = ({
   };
 
   return (
-    <div className={`${getLayoutStyles()} ${className}`}>
+    <div className={`${getLayoutStyles()} ${className} flex flex-col`}>
       {renderBackgroundEffects()}
 
-      {showHeader && <Header variant={variant} />}
+      {showHeader && (
+        <div className="w-full flex-shrink-0">
+          <Header variant={variant} />
+        </div>
+      )}
 
-      <main className={`${getContainerStyles()} ${containerClassName}`}>
+      <main className={`${getContainerStyles()} ${containerClassName} flex-1`}>
         {children}
       </main>
 

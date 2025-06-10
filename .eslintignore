@@ -1,0 +1,7 @@
+dist
+node_modules
+server
+*.config.js
+*.config.ts
+build
+.next 

@@ -4,12 +4,11 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface FloatingActionButtonProps {
-  pageId: string;
   businessName: string;
   htmlContent?: string;
 }
 
-export function FloatingActionButton({ pageId, businessName, htmlContent }: FloatingActionButtonProps) {
+export function FloatingActionButton({ businessName, htmlContent }: FloatingActionButtonProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navigate = useNavigate();
   const menuRef = useRef<HTMLDivElement>(null);

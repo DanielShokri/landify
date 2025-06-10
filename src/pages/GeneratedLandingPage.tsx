@@ -24,7 +24,6 @@ function ThemedLandingPageContent({ businessData, content, pageId }: { businessD
         {/* Only show floating button for saved pages (not preview) */}
         {!isPreview && (
           <FloatingActionButton
-            pageId={pageId}
             businessName={businessData.name}
             htmlContent={content.htmlDocument} // Always use original HTML for export
           />
@@ -58,7 +57,6 @@ function ThemedLandingPageContent({ businessData, content, pageId }: { businessD
       {/* Only show floating button for saved pages (not preview) */}
       {pageId !== 'preview' && (
         <FloatingActionButton
-          pageId={pageId}
           businessName={businessData.name}
         />
       )}

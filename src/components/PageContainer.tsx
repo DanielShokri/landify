@@ -19,14 +19,14 @@ const PageContainer = ({
 }: PageContainerProps) => {
   const getMaxWidthClass = () => {
     switch (maxWidth) {
-    case 'sm': return 'max-w-sm';
-    case 'md': return 'max-w-md';
-    case 'lg': return 'max-w-lg';
-    case 'xl': return 'max-w-xl';
-    case '2xl': return 'max-w-2xl';
-    case '7xl': return 'max-w-7xl';
-    case 'full': return 'max-w-full';
-    default: return 'max-w-xl';
+      case 'sm': return 'max-w-sm';
+      case 'md': return 'max-w-md';
+      case 'lg': return 'max-w-lg';
+      case 'xl': return 'max-w-xl';
+      case '2xl': return 'max-w-2xl';
+      case '7xl': return 'max-w-7xl';
+      case 'full': return 'max-w-full';
+      default: return 'max-w-xl';
     }
   };
 

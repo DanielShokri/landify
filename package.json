@@ -4,7 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "cd server && npm run dev",
+    "start": "npm run dev",
     "dev": "vite",
     "build": "tsc && vite build",
     "preview": "vite preview",
@@ -17,7 +17,10 @@
     "validate:strict": "npm run type-check:strict && npm run lint && npm run build",
     "pre-commit": "npm run validate",
     "check-all": "npm run validate:strict",
-    "fix-errors": "node scripts/fix-common-errors.js"
+    "fix-errors": "node scripts/fix-common-errors.js",
+    "server": "cd server && npm run dev",
+    "server:build": "cd server && npm run build",
+    "server:start": "cd server && npm start"
   },
   "dependencies": {
     "@googlemaps/js-api-loader": "github:googlemaps/js-api-loader",

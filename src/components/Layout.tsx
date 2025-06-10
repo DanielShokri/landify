@@ -21,25 +21,25 @@ const Layout = ({
 }: LayoutProps) => {
   const getLayoutStyles = () => {
     switch (variant) {
-    case 'landing':
-      return 'min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden';
-    case 'minimal':
-      return 'min-h-screen bg-white';
-    case 'app':
-    default:
-      return 'min-h-screen bg-gray-50';
+      case 'landing':
+        return 'min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden';
+      case 'minimal':
+        return 'min-h-screen bg-white';
+      case 'app':
+      default:
+        return 'min-h-screen bg-gray-50';
     }
   };
 
   const getContainerStyles = () => {
     switch (variant) {
-    case 'landing':
-      return 'relative z-10 max-w-7xl mx-auto px-6';
-    case 'minimal':
-      return 'max-w-4xl mx-auto px-4';
-    case 'app':
-    default:
-      return 'max-w-7xl mx-auto px-6';
+      case 'landing':
+        return 'relative z-10 max-w-7xl mx-auto px-6';
+      case 'minimal':
+        return 'max-w-4xl mx-auto px-4';
+      case 'app':
+      default:
+        return 'max-w-7xl mx-auto px-6';
     }
   };
 

@@ -19,12 +19,12 @@ const Header: React.FC<HeaderProps> = ({
   const getHeaderStyles = () => {
     switch (variant) {
     case 'landing':
-      return 'relative z-10 flex justify-between items-center p-6 max-w-7xl mx-auto';
+      return 'relative z-10 flex justify-between items-center p-6 max-w-7xl mx-auto w-full';
     case 'minimal':
-      return 'flex justify-between items-center p-4 border-b border-gray-200';
+      return 'flex justify-between items-center p-4 border-b border-gray-200 w-full';
     case 'app':
     default:
-      return 'flex justify-between items-center p-6 max-w-7xl mx-auto';
+      return 'flex justify-between items-center p-6 max-w-7xl mx-auto w-full';
     }
   };
 

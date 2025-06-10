@@ -8,12 +8,12 @@ const Footer = ({ variant = 'app', className = '' }: FooterProps) => {
   const getFooterStyles = () => {
     switch (variant) {
     case 'landing':
-      return 'text-center pb-12 text-gray-400 border-t border-white/10 pt-12';
+      return 'text-center py-8 text-gray-400 border-t border-white/10 mt-auto';
     case 'minimal':
-      return 'text-center py-4 text-gray-500 text-sm border-t border-gray-200';
+      return 'text-center py-8 text-gray-500 text-sm border-t border-gray-200 mt-auto';
     case 'app':
     default:
-      return 'text-center py-8 text-gray-500 border-t border-gray-200';
+      return 'text-center py-8 text-gray-500 border-t border-gray-200 mt-auto';
     }
   };
 
